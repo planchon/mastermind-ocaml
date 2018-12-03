@@ -1,3 +1,4 @@
-#use "code.ml";;
+open Code;;
 
-let testPion = Code.code_of_string (Code.string_of_code Code.couleur_possibles);;
+let () = 
+  print_int (List.length Code.tous);;

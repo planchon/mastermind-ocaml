@@ -50,6 +50,10 @@ sig
             [None] si la reponse ne peut etre calculee
          *)
         val reponse : t -> t -> (int * int)
+
+        val convert : int -> int -> int -> int list -> int list
+
+        val finirTableau : int -> int list -> int list
 end = struct    
         type pion = string;;
         type t = pion list;;
@@ -77,11 +81,16 @@ end = struct
         let tous =
           let n = List.length couleur_possibles and m = nombre_pion in
           let rec aux i acc =
-            if i = -1 then acc else aux (i - 1) acc @ [(List.map (fun x -> (List.nth couleur_possibles x))(finirTableau n (convert i n 0 [])))];
+            if i = -1 then acc else aux (i - 1) acc @ [(List.map (fun x -> (List.nth couleur_possibles x))(finirTableau m (convert i n 0 [])))];
           in aux (int_of_float ((float_of_int n) ** (float_of_int m)) - 1) [];;
         
-        let toutes_reponses = [(1,2)];;
-
+        let toutes_reponses =
+          let m = nombre_pion in
+          let rec aux i acc =
+            let array = finirTableau 2 (convert i m 0 []) in
+            if i = -1 then acc else aux (i - 1) (acc @ [(List.nth array 0, List.nth array 1)]);
+          in aux (nombre_pion * nombre_pion) [];;
+        
         let reponse code secret = (1,2);;
 end;;
 
