@@ -94,6 +94,8 @@ end = struct
             if i < 0 then (List.filter (fun (x,y) -> if x + y < m then true else false) acc) else aux (i - 1) (acc @ [(List.nth array 0, List.nth array 1)]);
           in aux (m * m) [];;
         
-        let reponse code secret = (1,2);;
+        let reponse code secret =
+          let listeTotale = List.combine code secret in
+          (List.length (List.filter (fun (x, y) -> if x = y then true else false) listeTotale), List.length (List.filter (fun (x, y) -> (x <> y) && (List.mem x secret)) listeTotale));;
 end;;
 
