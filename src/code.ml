@@ -71,12 +71,15 @@ end = struct
         let code_of_string code = List.filter (fun x -> String.length x != 0) (Str.split_delim (Str.regexp "_") code);;
 
         let rec convert x b i tmp =
-          if x = 0 then tmp
+          if x <= 0 then tmp
           else convert (x / b) b (i + 1) tmp @ [x mod b];;
 
-        let rec finirTableau b tab =
-          if (List.length tab) = b then tab
-          else finirTableau b (tab @ [0]);;
+        let finirTableau b tab =
+          let taille = List.length tab in
+          let rec aux final i tab = 
+            if i >= final then tab
+            else aux final (i + 1) (tab @ [0])
+          in aux b taille tab;;
           
         let tous =
           let n = List.length couleur_possibles and m = nombre_pion in
@@ -88,8 +91,8 @@ end = struct
           let m = nombre_pion in
           let rec aux i acc =
             let array = finirTableau 2 (convert i m 0 []) in
-            if i = -1 then acc else aux (i - 1) (acc @ [(List.nth array 0, List.nth array 1)]);
-          in aux (nombre_pion * nombre_pion) [];;
+            if i < 0 then (List.filter (fun (x,y) -> if x + y < m then true else false) acc) else aux (i - 1) (acc @ [(List.nth array 0, List.nth array 1)]);
+          in aux (m * m) [];;
         
         let reponse code secret = (1,2);;
 end;;
