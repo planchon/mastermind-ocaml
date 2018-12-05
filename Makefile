@@ -1,9 +1,9 @@
 CC=ocamlc
 BASE=str.cma
 
-libs:
-	@echo [BUILDING MODULES]
-	$(CC) $(BASE) src/code.ml -o bin/obj/code.cmo
-
-all: libs
-	$(CC) $(BASE) bin/obj/* src/test.ml -o bin/final
+all:
+	@echo [BUILDING...]
+	cd src/ && $(CC) $(BASE) load.ml code.ml main.ml -o ../bin/game
+	cd src/ && rm *.cmo
+	cd src/ && rm *.cmi
+	@echo [BUILDING FINISHED]
