@@ -1,5 +1,4 @@
 (** Module de definition d'un code dans le jeu de Mastermind*)
-#load "str.cma";;
 module Code:
 sig
         (** Le type d'un pion *)
@@ -68,7 +67,7 @@ end = struct
 
         let string_of_code code = List.fold_right (fun x y -> x ^ "_" ^ y) code "";;
 
-        let code_of_string code = List.filter (fun x -> String.length x != 0) (Str.split_delim (Str.regexp "_") code);;
+        let code_of_string code = Str.split (Str.regexp "_") code;;
 
         let rec convert x b i tmp =
           if x <= 0 then tmp
