@@ -11,7 +11,11 @@ end = struct
           let rec trie tableau = 
             match tableau with
             | a::b -> (
+                    (* on regarde si le code a est un code viable *)
                     
+                    
+                    (* on rappelle la fonction sur le reste des codes *)
+                    trie b;
             )
             | _ -> final;
           in trie possible;;
