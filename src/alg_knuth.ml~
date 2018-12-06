@@ -1,0 +1,6 @@
+module ALG_Knuth:
+sig
+        val algo : Code.t list -> Code.t list -> Code.t;;
+end = struct
+        let algo propose possible = ["code"];;
+end;;

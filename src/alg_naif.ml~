@@ -1,0 +1,6 @@
+(* implementation de l'algo naif *)
+module ALG_Naif:
+sig
+        val algo : Code.t list -> Code.t list -> Code.t;;
+end = struct
+end;;
