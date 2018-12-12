@@ -22,21 +22,21 @@ sig
          *
          * @return la nouvelle liste de codes possibles
          *)
-        val filtre : int -> (Code.t * (int * int) option) -> Code.t list -> Code.t list
+        val filtre : int -> (Code.t * (int * int)) -> Code.t list -> Code.t list
 end = struct
         let nombre_methodes = 2;;
-
+        
         let choix methode propose possible =
           if (methode = 0) then (
-                  ALG_Naif.algo propose possible;
+                  ALG_Naif.algo propose (filtre 0 propose possible);
           ) else (
-                  ALG_Knuth.algo propose possible;
+                  ALG_Knuth.algo propose (filtre 1 propose possible);
           );;
 
         let filtre methode reponse possible =
           if (methode = 0) then (
-                  ALG_Naif.filtre reponse possible;
+                  ALG_Naif.filtre_ (snd reponse) possible (fst reponse);
           ) else (
-                  ALG_Knuth.filtre reponse possible;
+                  ALG_Knuth.filtre (snd reponse) possible (fst reponse);
           );;
 end;;
