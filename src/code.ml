@@ -53,9 +53,6 @@ sig
         val convert : int -> int -> int -> int list -> int list
 
         val finirTableau : int -> int list -> int list
-
-        val trouverCouleur : t -> t -> int
-                                               
 end = struct    
         type pion = string;;
         type t = pion list;;
@@ -113,6 +110,6 @@ end = struct
         let reponse code secret =
           let listeTotale = List.combine code secret in
           let bienPlace = List.partition (fun (x,y) -> x = y) listeTotale in
-          (List.length (fst bienPlace), trouverCouleur (fst (List.split (snd bienPlace))) secret);;
+          (List.length (fst bienPlace), trouverCouleur (fst (List.split (snd bienPlace)))  (snd (List.split (snd bienPlace))));;
 end;;
 
