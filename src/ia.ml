@@ -1,7 +1,9 @@
 (** Algorithmes de recherche de code *)
+open ALG_Naif;;
+open ALG_Knuth;;
 module IA :
 sig
-        (** Nombre d ' algorithmes developpes *)
+        (** Nombre d' algorithmes developpes *)
         val nombre_methodes : int
 
         (** Choisit un code a proposer
@@ -25,18 +27,18 @@ sig
         val filtre : int -> (Code.t * (int * int)) -> Code.t list -> Code.t list
 end = struct
         let nombre_methodes = 2;;
-        
-        let choix methode propose possible =
-          if (methode = 0) then (
-                  ALG_Naif.algo propose (filtre 0 propose possible);
-          ) else (
-                  ALG_Knuth.algo propose (filtre 1 propose possible);
-          );;
 
         let filtre methode reponse possible =
           if (methode = 0) then (
-                  ALG_Naif.filtre_ (snd reponse) possible (fst reponse);
+                  ALG_Naif.filtre_ (snd reponse) possible (fst reponse)
           ) else (
-                  ALG_Knuth.filtre (snd reponse) possible (fst reponse);
+                  ALG_Knuth.filtre_ (snd reponse) possible (fst reponse)
+          );;
+        
+        let choix methode propose possible =
+          if (methode = 0) then (
+                  ALG_Naif.algo propose possible
+          ) else (
+                  ALG_Knuth.algo propose possible
           );;
 end;;
