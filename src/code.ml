@@ -92,9 +92,24 @@ end = struct
             let array = finirTableau 2 (convert i m 0 []) in
             if i < 0 then (List.filter (fun (x,y) -> if x + y < m then true else false) acc) else aux (i - 1) (acc @ [(List.nth array 0, List.nth array 1)]);
           in aux (m * m) [];;
+
+        let supprFromListe a liste =
+          let liste2 = (List.partition (fun x -> x = a) liste) in
+          (List.tl (fst liste2)) @ (snd liste2);;
+        
+        let trouverCouleur code2 secret2 =
+          let rec aux code secret tmp = 
+            match code with
+            | a :: b -> if (List.mem a secret) then
+                                aux b (supprFromListe a secret) (tmp + 1)
+                        else
+                                aux b secret tmp
+            | _ -> tmp;
+          in aux code2 secret2 0;;
         
         let reponse code secret =
           let listeTotale = List.combine code secret in
-          (List.length (List.filter (fun (x, y) -> if x = y then true else false) listeTotale), List.length (List.filter (fun (x, y) -> (x <> y) && (List.mem x secret)) listeTotale));;
+          let bienPlace = List.partition (fun (x,y) -> x = y) listeTotale in
+          (List.length (fst bienPlace), trouverCouleur (fst (List.split (snd bienPlace)))  (snd (List.split (snd bienPlace))));;
 end;;
 
