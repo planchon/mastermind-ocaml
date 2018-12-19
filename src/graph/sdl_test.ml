@@ -1,7 +1,6 @@
 open Sdlevent;;
 
 let logoMastermind = "logo.jpg";;
-let logo = Sdlvideo.load_image logoMastermind;;
 let fontMastermind = "font.ttf";;
 let screenWidth = 600;;
 let screenHeight = 800;;
@@ -14,13 +13,11 @@ let drawImage image x y screen =
   Sdlvideo.flip screen;;
 
 let clearScreen screen =
-  Sdlvideo.fill_rect screen (Sdlvideo.map_RGB screen Sdlvideo.black);
+  Sdlvideo.fill_rect screen (Sdlvideo.map_RGB screen Sdlvideo.white);
   Sdlvideo.flip screen;;
 
 let mousePosition mouseEvent =
-  clearScreen screen;
-  let x = mouseEvent.mme_x and y = mouseEvent.mme_y in
-  drawImage logo x y screen;;
+  clearScreen screen;;
 
 let rec wait_for_event () =
   let event = wait_event () in
@@ -43,7 +40,7 @@ let () =
   Sdlttf.init ();
   at_exit Sdlttf.quit;
 
-  let logo = Sdlvideo.load_image logoMastermind in 
+  let logo = Sdlloader.load_image logoMastermind in 
   
   drawImage logo 0 0 screen;
   drawImage logo 0 100 screen;
