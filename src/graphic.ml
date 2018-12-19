@@ -1,11 +1,12 @@
 module Graphic :
 sig 
-  val ecranDepart : unit -> unit
+  val ecranDepart : unit -> Code.t
 end = struct
   (*
   #load "graphics.cma" ;;
   *)
   open Graphics;;
+  open IA;;
   open Code;;
   
   let orange 	= rgb 198 141 62 ;;
@@ -122,12 +123,30 @@ end = struct
     else
       codeSelection;;
 
-let rec codeRandome acc =
-    if acc < 3 then
-      let possible = ["Vert";"Bleu";"Orange";"Noir";"Blanc";"Rouge";"Blanc"] in
-      let nombre = Random.int (List.length possible) in (List.nth possible nombre) :: codeRandome (acc + 1)
+  (*ecran de Jeu pour IA *)
+  let rec ecranJeuIA col row listeCode codeSelection codeSecret s =
+    clear_graph ();
+    set_color red;
+    fill_rect 50 50 100 75;
+    drawGrille col row (500 / col , 800 / row);
+    if listeCode != [] then
+      draw_all_code listeCode 0 col row;
+    drawCode (250 + ((500/col)/2)) (50 + 50) codeSelection (500/col) ((min (500/col) (100))/2 - 2);
+    let codeSelection = selectionCouleurIA codeSecret listeCode codeSelection col row s in ecranJeuIA col row listeCode codeSelection codeSecret s;
+
+  and selectionCouleurIA codeSecret listeCode codeSelection col row s=
+    let e = Graphics.wait_next_event [Graphics.Button_down] in
+    if e.Graphics.mouse_x > 50 && e.Graphics.mouse_x < 150 && e.Graphics.mouse_y > 50 && e.Graphics.mouse_y < 125 then 
+      let code = IA.choix 0 [] s in let rep = Code.reponse code codeSecret in let s = IA.filtre 1 (code,rep) s in ecranJeuIA col row ((rep,code) :: listeCode) code codeSecret s
     else
-      [];;
+      codeSelection;;
+
+  let rec codeRandome acc =
+      if acc < 3 then
+        let possible = ["Vert";"Bleu";"Orange";"Noir";"Blanc";"Rouge";"Blanc"] in
+        let nombre = Random.int (List.length possible) in (List.nth possible nombre) :: codeRandome (acc + 1)
+      else
+        [];;
 
 
   let attentInput () =
@@ -239,7 +258,8 @@ let rec codeRandome acc =
     draw_string "coucou t'es pret a jouer";
     moveto 450 450;
     draw_string "o pour creer un code n pour deviner un code";
-    choisiecol 10;;
+    let s = tous in ecranJeuIA 4 5 [] ["Noir";"Noir";"Noir";"Noir"] ["Vert";"Blanc";"Noir";"Bleu"] s ;;
+    (* choisiecol 10;; *)
     (* attentInput ();; *)
 
 end;;
