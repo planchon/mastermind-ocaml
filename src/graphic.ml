@@ -1,5 +1,9 @@
 module Graphic :
 sig 
+
+  (** Ecran de depart partie graphique
+    * @return le dernier code joué
+    *)
   val ecranDepart : unit -> Code.t
 end = struct
   (*
@@ -95,7 +99,7 @@ end = struct
   
   let draw_bonne_reponse reponse1 reponse2 range row =
     moveto 100 (200 + (800 / row) * range + ((800 / row)/2));
-    let reponse = string_of_int reponse1 ^ " " ^ string_of_int reponse2 in draw_string (reponse);;
+    let rep = string_of_int reponse1 ^ " " ^ string_of_int reponse2 in draw_string (rep);;
   
   
   let rec draw_all_code liste_code numero col row =
@@ -131,13 +135,16 @@ end = struct
     drawGrille col row (500 / col , 800 / row);
     if listeCode != [] then
       draw_all_code listeCode 0 col row;
-    drawCode (250 + ((500/col)/2)) (50 + 50) codeSelection (500/col) ((min (500/col) (100))/2 - 2);
+    drawCode (250 + ((500/col)/2)) (50 + 50) codeSecret (500/col) ((min (500/col) (100))/2 - 2);
     let codeSelection = selectionCouleurIA codeSecret listeCode codeSelection col row s in ecranJeuIA col row listeCode codeSelection codeSecret s;
 
   and selectionCouleurIA codeSecret listeCode codeSelection col row s=
     let e = Graphics.wait_next_event [Graphics.Button_down] in
     if e.Graphics.mouse_x > 50 && e.Graphics.mouse_x < 150 && e.Graphics.mouse_y > 50 && e.Graphics.mouse_y < 125 then 
-      let code = IA.choix 0 [] s in let rep = Code.reponse code codeSecret in let s = IA.filtre 1 (code,rep) s in ecranJeuIA col row ((rep,code) :: listeCode) code codeSecret s
+      if listeCode = [] then
+        let code = IA.choix 0 [] s in let rep = Code.reponse code codeSecret in let s = IA.filtre 1 (code,rep) s in ecranJeuIA col row ((rep,code) :: listeCode) code codeSecret s
+      else
+        let code = IA.choix 2 [] s in let rep = Code.reponse code codeSecret in let s = IA.filtre 1 (code,rep) s in ecranJeuIA col row ((rep,code) :: listeCode) code codeSecret s   
     else
       codeSelection;;
 
@@ -258,7 +265,7 @@ end = struct
     draw_string "coucou t'es pret a jouer";
     moveto 450 450;
     draw_string "o pour creer un code n pour deviner un code";
-    let s = tous in ecranJeuIA 4 5 [] ["Noir";"Noir";"Noir";"Noir"] ["Vert";"Blanc";"Noir";"Bleu"] s ;;
+    let s = tous in ecranJeuIA 4 15 [] ["Noir";"Noir";"Noir";"Noir"] ["Vert";"Rouge";"Noir";"Noir"] s ;;
     (* choisiecol 10;; *)
     (* attentInput ();; *)
 

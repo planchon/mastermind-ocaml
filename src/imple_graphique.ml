@@ -7,4 +7,6 @@
 
 open Graphic;;
 
+(*Ouvre tout less modules necessaires et lance la partie graphique*)
+
 Graphic.ecranDepart ();;

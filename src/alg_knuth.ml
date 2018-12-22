@@ -21,16 +21,19 @@ sig
 	* @param la liste de courante de codes possibles
 	* @return la nouvelle liste de codes possibles
 	*)
-		val filtre :int -> (Code.t * (int * int)) -> Code.t list -> Code.t list
-		
-		val test : unit -> int
+	val filtre :int -> (Code.t * (int * int)) -> Code.t list -> Code.t list
+	
+	
+	(**Lance les test de l'algo de Knuth
+		*)
+	val test : (int * int) -> int -> float
 
 end = struct
 
 	let nombre_methodes = 2;;
 
 	open Code;;
-
+	(*filtre les codes possibles en fonction du code d'essaie et du score obtenue*)
 	let rec filtre2 algo codeEssaye codePossible  = 
 		if codePossible != [] && algo = 1 then
 			let reponse = reponse (List.hd codePossible) (fst codeEssaye) in
@@ -61,7 +64,7 @@ end = struct
 			max poids (testToutScore element s)
 		else
 				0;;
-
+	(*test tout les code en fonction de tous les score possibles et ressort le minimu pour minMax*)
 	let rec testToutCode score temp min s = 
 		if temp < (List.length s) then
 			let nouveaux = testToutScore ((List.nth s temp),score) s in
@@ -72,15 +75,20 @@ end = struct
 		else
 			(fst min);;
 
+	(* algo minMax pour obtimisation choix du code a tester pour knuth*)
 	let rec minMax score s =
 		testToutCode score 0 ([], (List.length s)) s;;
 	
+	(* choisie le prochain code a tester en fonction de l'algorithme choisie (random ou minMax)*)
 	let choix algo codeDeja codePossible =
 		if algo = 0 then
-			List.nth codePossible (Random.int (List.length codePossible))
-		else	
-			minMax (0,0) codePossible;;
- 
+			["Bleu";"Bleu";"Vert";"Vert"]
+		else if algo = 1 then 
+			minMax (0,0) codePossible
+		else
+			List.nth codePossible (Random.int (List.length codePossible));;
+
+	(*filtre les codes possibles en fonction du code d'essaie et du score obtenue*)
 	let rec filtre algo codeEssaye codePossible  = 
 		if codePossible != [] && algo = 1 then
 			let reponse = reponse (List.hd codePossible) (fst codeEssaye) in
@@ -90,7 +98,7 @@ end = struct
 				filtre algo codeEssaye (List.tl codePossible) 
 		else 
 			[];;
-
+	(*lance le test de l'algo de knuth en fonction d'un code rentré*)
 	let rec testAlgo numero listeCode codeSecret temp =
 		let codeTest = choix numero [] listeCode in
 		let listeCode = filtre 1 (codeTest,reponse codeTest codeSecret) listeCode in
@@ -99,7 +107,17 @@ end = struct
 		else
 			testAlgo 1 listeCode codeSecret (temp + 1);;
 
-	let test () = 
-		let ensemble = tous in testAlgo 0 ensemble ["Vert";"Blanc";"Noir";"Bleu"] 0;;
+	let rec codeRandome acc =
+		if acc <= 3 then
+			let possible = ["Rouge"; "Vert"; "Bleu"; "Orange"; "Noir"; "Blanc"] in
+			let nombre = Random.int (List.length possible) in (List.nth possible nombre) :: codeRandome (acc + 1)
+		else
+			[];;
 
+	(*lance iteratio nombre de test et ressort la moyenne de coup pour que l'algo trouve la bonne reponse*)
+	let rec test essaie iterations =
+		if iterations >= 0 then
+			let ensemble = tous in let essaie = (((fst essaie) + (testAlgo 0 ensemble ["Noir";"Noir";"Noir";"Noir"] 0)),((snd essaie) + 1)) in test essaie (iterations -1)
+		else
+			(float_of_int (fst essaie)) /. (float_of_int (snd essaie)) +. 1.;;
 end ;;
