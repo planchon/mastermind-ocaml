@@ -1,5 +1,5 @@
 RESULT     = game
-SOURCES    = sdl_test.ml
+SOURCES    = board.ml draw.ml graph.ml
 LIBS       = bigarray sdl sdlloader sdlttf sdlmixer
 INCDIRS    = +sdl
 

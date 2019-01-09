@@ -1,0 +1,16 @@
+let init_draw_module =
+  Sdl.init [`VIDEO];
+   Sdlwm.set_caption "Mastermind - Durand & Planchon" "";
+   at_exit Sdl.quit;
+   Sdlttf.init ();
+   at_exit Sdlttf.quit;;
+
+let drawImage image x y screen =
+  let position_of_image = Sdlvideo.rect x y 0 0 in
+  Sdlvideo.blit_surface ~dst_rect:position_of_image ~src:image ~dst:screen ();
+  Sdlvideo.flip screen;;
+
+let clearScreen screen =
+  Sdlvideo.fill_rect screen (Sdlvideo.map_RGB screen Sdlvideo.black);
+  Sdlvideo.flip screen;;
+  

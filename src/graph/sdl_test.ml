@@ -8,6 +8,13 @@ let screenHeight = 800;;
 
 let screen = Sdlvideo.set_video_mode screenWidth screenHeight [`DOUBLEBUF];;
 
+let init_everything =
+   Sdl.init [`VIDEO];
+   Sdlwm.set_caption "Mastermind - Durand & Planchon" "";
+   at_exit Sdl.quit;
+   Sdlttf.init ();
+   at_exit Sdlttf.quit;;
+
 let drawImage image x y screen =
   let position_of_image = Sdlvideo.rect x y 0 0 in
   Sdlvideo.blit_surface ~dst_rect:position_of_image ~src:image ~dst:screen ();
@@ -37,13 +44,7 @@ let rec wait_for_event () =
         wait_for_event ()
         
 let () =
-  Sdl.init [`VIDEO];
-  Sdlwm.set_caption "Mastermind - Durand & Planchon" "";
-  at_exit Sdl.quit;
-  Sdlttf.init ();
-  at_exit Sdlttf.quit;
-
-  let logo = Sdlvideo.load_image logoMastermind in 
+  init_everything;
   
   drawImage logo 0 0 screen;
   drawImage logo 0 100 screen;
