@@ -112,38 +112,67 @@ let generate_dummy () =
 let joueur_vs_joueur pseudos () =
   let premier = (Random.int 2) in
   let pseudos = [List.nth pseudos premier; List.nth pseudos ((premier + 1) mod 2)] in
-  Draw.render_text_center ((List.nth pseudos 0) ^ " choisis le code");
-  Sdltimer.delay 750;
-  Draw.draw_board_background ();
+  Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
   Draw.draw_interactive_pion (generate_dummy ());
   let secret = (Array.to_list (find_couleur (Array.of_list (generate_dummy ())))) in
 
-  let rec jouer vie pions scores =
-    mettre_a_jour_ecran pions scores;
-    Draw.draw_interactive_pion (List.hd (List.rev pions));
-    Draw.render_text_center ((List.nth pseudos 1) ^ " a toi de jouer");
-    Sdltimer.delay 1500;
-    mettre_a_jour_ecran pions scores;
-    
-    let essais = (Array.to_list (find_couleur (Array.of_list (List.hd (List.rev pions))))) in
-    let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in
-    
-    Draw.render_text_center ((List.nth pseudos 0) ^ " mets le score");
-    mettre_a_jour_ecran tmpPions tmpCode;
-    Draw.draw_interactive_pion secret;
-    Sdltimer.delay 1500;
-    
-    let code = (convert_liste_to_score (Array.to_list (find_score (Array.of_list ["Null"; "Null"; "Null"; "Null"])))) in
-    
-    if (snd code) = nombre_de_pion then
-            begin
-                    Draw.clearScreen Draw.screen;
-                    Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
-                    wait_quit_event ();
-            end
-    else
-            jouer (vie - 1) tmpPions ((List.rev (List.tl (List.rev tmpCode))) @ [code])
-  in jouer 9 [] [];;
+  Draw.draw_board_background ();
+  Draw.draw_interactive_pion (generate_dummy ());
+  Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
+  
+  let essais_premier = (Array.to_list (find_couleur (Array.of_list (generate_dummy ())))) in
+
+  mettre_a_jour_ecran [essais_premier] [(0,0)];
+  Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
+
+  Draw.draw_interactive_pion ["Noir"; "Noir"; "Null"; "Null"];
+  
+  let code = (convert_liste_to_score (Array.to_list (find_score (Array.of_list ["Null"; "Null"; "Null"; "Null"])))) in
+  
+  if (snd code) = nombre_de_pion then
+          begin
+                  Draw.clearScreen Draw.screen;
+                  Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
+                  Draw.render_text_center_y "escape pour sortir" 600;
+                  wait_quit_event ();
+          end
+  else
+          begin
+                  let rec jouer vie pions scores =
+                    if vie != 0 then
+                            begin
+                                    mettre_a_jour_ecran pions scores;
+                                    Draw.draw_interactive_pion (List.hd (List.rev pions));
+                                    Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
+                                    
+                                    let essais = (Array.to_list (find_couleur (Array.of_list (List.hd (List.rev pions))))) in
+                                    let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in
+
+                                    mettre_a_jour_ecran tmpPions tmpCode;
+                                    Draw.draw_interactive_pion ["Null"; "Null"; "Null"; "Null"];                    
+                                    Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
+                                    
+                                    let code = (convert_liste_to_score (Array.to_list (find_score (Array.of_list ["Null"; "Null"; "Null"; "Null"])))) in
+                                    
+                                    if (snd code) = nombre_de_pion then
+                                            begin
+                                                    Draw.clearScreen Draw.screen;
+                                                    Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
+                                                    Draw.render_text_center_y "escape pour sortir" 600;
+                                                    wait_quit_event ();
+                                            end
+                                    else
+                                            jouer (vie - 1) tmpPions ((List.rev (List.tl (List.rev tmpCode))) @ [code])
+                            end
+                    else
+                            begin
+                                    Draw.clearScreen Draw.screen;
+                                    Draw.render_text_center ((List.nth pseudos 0) ^ " tu as gagne!");
+                                    Draw.render_text_center_y "escape pour sortir" 600;
+                                    wait_quit_event ();
+                            end
+                  in jouer 9 [essais_premier] [code];
+          end;;
   
 let () =
   Random.self_init ();

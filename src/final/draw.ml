@@ -15,6 +15,7 @@ sig
         val render_text : string -> int -> int -> unit
         val get_text : int -> int -> string
         val render_text_center : string -> unit
+        val render_text_center_y : string -> int -> unit
         val menu_type_de_partie : string -> string list -> int
 
         val screenWidth : int  
@@ -101,6 +102,18 @@ end = struct
           Sdlvideo.blit_surface ~dst_rect:pos ~src:text_rendered ~dst:screen ();
           Sdlvideo.flip screen;;      
 
+        let render_text_center_y text y =
+          (* on fait le rendu du gros text chiant *)
+          let font = Sdlttf.open_font "font/font.ttf" 34 in
+          let text_rendered = Sdlttf.render_text_blended font text ~fg:Sdlvideo.white in
+          let pos = Sdlvideo.rect (screenWidth / 2 - (Sdlvideo.surface_info text_rendered).w / 2) y 0 0 in
+          let rectangle = Sdlvideo.rect pos.r_x pos.r_y (Sdlvideo.surface_info text_rendered).w (Sdlvideo.surface_info text_rendered).h in
+          
+          Sdlvideo.fill_rect ~rect:rectangle screen Int32.zero;
+          Sdlvideo.blit_surface ~dst_rect:pos ~src:text_rendered ~dst:screen ();
+          Sdlvideo.flip screen;;      
+
+        
         let menu_type_de_partie text option =
           render_text_center text;
           render_text (List.nth option 0) (screenWidth / 2 - 200) (screenHeight / 2 + 15);
