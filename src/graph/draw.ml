@@ -9,9 +9,11 @@ sig
         val draw_board_background : unit
         val mouse_event : mousebutton_event -> int
         val draw_interactive_pion : string list -> unit
-                
+        val draw_pions : string list list -> unit
+        val draw_score : (int * int) list -> unit
+            
 end = struct
-        let nombre_de_pion = 11;;
+        let nombre_de_pion = 4;;
 
         let screenWidth =
           if nombre_de_pion mod 2 = 0 then
@@ -56,13 +58,6 @@ end = struct
                   else
                          -1;; 
 
-        (* prend une liste de pion de type pion et retourne la couleur et les affiche *) 
-        let draw_interactive_pion pions =
-          let pions = Array.of_list pions in
-          for i = 0 to (Array.length pions) - 1 do
-                  drawImage (Board.pion_of_couleur (Array.get pions i) board) (const_pion_start + 42 + i * 52) 726 screen;
-          done;;
-
         let draw_board_background =
           drawImage board.bg.score_gauche 0 0 screen;
           if nombre_de_pion mod 2 = 0 then
@@ -89,4 +84,48 @@ end = struct
                           done;
                           drawImage board.bg.pion_droite (((82 + 22 * ((nombre_de_pion - 3) / 2)) + 47) + 81 + (nombre_de_pion - 2) * 52) 0 screen;
                   end;;
+        
+        (* prend une liste de pion de type pion et retourne la couleur et les affiche *) 
+        let draw_pion_liste pions y =
+          let pions = Array.of_list pions in
+          for i = 0 to (Array.length pions) - 1 do
+                  drawImage (Board.pion_of_couleur (Array.get pions i) board) (const_pion_start + 42 + i * 52) y screen;
+          done;;
+
+        let draw_one_score score y =
+          (* pions noir *)
+          let noir = (Board.score.petit_noir) and blanc = (Board.score.petit_blanc) in
+          for i=0 to (fst score) do
+                  if i mod 2 = 0 then
+                          drawImage noir 50 (y + 50); 
+                  else
+                          drawImage noir 50 y;
+          done;
+          for i=(fst score) to (snd score) do
+                  if i mod 2 = 0 then
+                          drawImage blanc 50 (y + 50); 
+                  else
+                          drawImage blanc 50 y;
+          done;;
+                
+        let draw_score liste_score =
+          for i=1 to (List.length liste_score) do
+                  draw_one_score (List.nth liste_score (i - 1)) 726;
+          done;;
+        
+        let draw_pions liste_pions =
+          for i=1 to (List.length liste_pions) do
+                  match i with
+                  | 1 -> draw_pion_liste (List.nth liste_pions (i - 1)) (726 - 69)
+                  | 3 -> draw_pion_liste (List.nth liste_pions (i - 1)) (726 - 67 * 3 + 1)
+                  | 7 -> draw_pion_liste (List.nth liste_pions (i - 1)) (726 - 67 * 7 + 1)
+                  | 8 -> draw_pion_liste (List.nth liste_pions (i - 1)) (726 - 67 * 8 + 1)
+                  | 9 -> draw_pion_liste (List.nth liste_pions (i - 1)) (726 - 67 * 9 + 2)
+                  | 10 -> draw_pion_liste (List.nth liste_pions (i - 1)) (726 - 67 * 10 + 2)
+                  | _ ->
+                     draw_pion_liste (List.nth liste_pions (i - 1)) (726 - 67 * i)
+          done;;
+        
+        let draw_interactive_pion pions =
+          draw_pion_liste pions 726;;
 end;;

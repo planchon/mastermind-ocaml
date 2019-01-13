@@ -27,6 +27,7 @@ sig
                   rose        : Sdlvideo.surface;
                   vert        : Sdlvideo.surface;
                   violet      : Sdlvideo.surface;
+                  null        : Sdlvideo.surface;
           }
 
         type board_score_image =
@@ -77,6 +78,7 @@ end = struct
                   rose        : Sdlvideo.surface;
                   vert        : Sdlvideo.surface;
                   violet      : Sdlvideo.surface;
+                  null        : Sdlvideo.surface;
           }
 
         type board_score_image =
@@ -118,7 +120,8 @@ end = struct
                   orange      = Sdlloader.load_image "img/orange.png";
                   rose        = Sdlloader.load_image "img/rose.png";
                   vert        = Sdlloader.load_image "img/vert.png";
-                  violet      = Sdlloader.load_image "img/violet.png";     
+                  violet      = Sdlloader.load_image "img/violet.png";
+                  null        = Sdlloader.load_image "img/null.png";
           };;
 
         let init_score_image =
@@ -148,6 +151,7 @@ end = struct
           | "Orange" -> board.pion.orange;
           | "Rose"   -> board.pion.rose;
           | "Vert"   -> board.pion.vert;
+          | "Null"   -> board.pion.null;
           | "Violet" -> board.pion.violet;;                      
                       
 end;;  
