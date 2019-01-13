@@ -36,11 +36,11 @@ end = struct
 	(*filtre les codes possibles en fonction du code d'essaie et du score obtenue*)
 	let rec filtre2 algo codeEssaye codePossible  = 
 		if codePossible != [] && algo = 1 then
-			let reponse = reponse (List.hd codePossible) (fst codeEssaye) in
-			if reponse = (snd codeEssaye) then
+			let rep = reponse (List.hd codePossible) (fst codeEssaye) in
+			if rep = (snd codeEssaye) then
 				(List.hd codePossible) :: filtre2 algo codeEssaye (List.tl codePossible) 
 			else
-			filtre2 algo codeEssaye (List.tl codePossible) 
+				filtre2 algo codeEssaye (List.tl codePossible)
 		else 
 			[];;
 
@@ -75,7 +75,7 @@ end = struct
 		else
 			(fst min);;
 
-	(* algo minMax pour obtimisation choix du code a tester pour knuth*)
+	(* algo minMax pour optimisation choix du code a tester pour knuth*)
 	let rec minMax score s =
 		testToutCode score 0 ([], (List.length s)) s;;
 	
@@ -91,8 +91,8 @@ end = struct
 	(*filtre les codes possibles en fonction du code d'essaie et du score obtenue*)
 	let rec filtre algo codeEssaye codePossible  = 
 		if codePossible != [] && algo = 1 then
-			let reponse = reponse (List.hd codePossible) (fst codeEssaye) in
-			if reponse = (snd codeEssaye) then
+			let rep = reponse (List.hd codePossible) (fst codeEssaye) in
+			if rep = (snd codeEssaye) then
 				(List.hd codePossible) :: filtre algo codeEssaye (List.tl codePossible) 
 			else
 				filtre algo codeEssaye (List.tl codePossible) 

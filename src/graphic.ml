@@ -4,7 +4,7 @@ sig
   (** Ecran de depart partie graphique
     * @return le dernier code joué
     *)
-  val ecranDepart : unit -> Code.t
+  val ecranDepart : unit -> unit
 end = struct
   (*
   #load "graphics.cma" ;;
@@ -23,6 +23,8 @@ end = struct
   let drawPion coorx coory rayon couleur =
     set_color couleur;
     fill_circle coorx coory rayon;
+    set_color black;
+    draw_circle coorx coory rayon;
     set_color noir;;
   
   
@@ -60,6 +62,12 @@ end = struct
       (List.hd codeSelection) :: (changement_code (position-1) (List.tl codeSelection));;
   
   
+  let ecranVictoire message =
+    moveto 400 1100;
+    set_color black;
+    draw_string message;
+    let e = Graphics.wait_next_event [Graphics.Button_down] in close_graph ();;
+
   
   let drawGrille col row ecart =
     set_color black;
@@ -116,6 +124,10 @@ end = struct
     if listeCode != [] then
       draw_all_code listeCode 0 col row;
     drawCode (250 + ((500/col)/2)) (50 + 50) codeSelection (500/col) ((min (500/col) (100))/2 - 2);
+    if listeCode != [] && snd (List.hd listeCode) = codeSecret then
+      let message = "victoire en " ^ string_of_int (List.length listeCode) ^ " coups" in  ecranVictoire message
+    else if List.length listeCode = row then
+      ecranVictoire "perdu :'(";
     let codeSelection = selectionCouleur codeSecret listeCode codeSelection col row in ecranJeu col row listeCode codeSelection codeSecret;
 
   and selectionCouleur codeSecret listeCode codeSelection col row =
@@ -133,9 +145,13 @@ end = struct
     set_color red;
     fill_rect 50 50 100 75;
     drawGrille col row (500 / col , 800 / row);
-    if listeCode != [] then
+    if listeCode != [] && (fst(List.hd listeCode)) != (4,0)  then
       draw_all_code listeCode 0 col row;
     drawCode (250 + ((500/col)/2)) (50 + 50) codeSecret (500/col) ((min (500/col) (100))/2 - 2);
+    if listeCode != [] && snd (List.hd listeCode) = codeSecret then
+      let message = "victoire en " ^ string_of_int (List.length listeCode) ^ " coups" in  ecranVictoire message
+    else if List.length listeCode = row then
+      ecranVictoire "perdu :'(";
     let codeSelection = selectionCouleurIA codeSecret listeCode codeSelection col row s in ecranJeuIA col row listeCode codeSelection codeSecret s;
 
   and selectionCouleurIA codeSecret listeCode codeSelection col row s=
@@ -143,9 +159,11 @@ end = struct
     if e.Graphics.mouse_x > 50 && e.Graphics.mouse_x < 150 && e.Graphics.mouse_y > 50 && e.Graphics.mouse_y < 125 then 
       if listeCode = [] then
         let code = IA.choix 0 [] s in let rep = Code.reponse code codeSecret in let s = IA.filtre 1 (code,rep) s in ecranJeuIA col row ((rep,code) :: listeCode) code codeSecret s
+      else if (List.length s) = 1 then 
+        let code = (List.hd s) in ecranJeuIA col row (((4,0),code) :: listeCode) code codeSecret s
       else
-        let code = IA.choix 2 [] s in let rep = Code.reponse code codeSecret in let s = IA.filtre 1 (code,rep) s in ecranJeuIA col row ((rep,code) :: listeCode) code codeSecret s   
-    else
+        let code = IA.choix 1 [] s in let rep = Code.reponse code codeSecret in let s = IA.filtre 1 (code,rep) s in ecranJeuIA col row ((rep,code) :: listeCode) code codeSecret s   
+    else (*choix 1 pour minMAx bug*)
       codeSelection;;
 
   let rec codeRandome acc =
@@ -257,16 +275,62 @@ end = struct
     else
       selectioncolChoisie col;;
 
+  let rec choisieCodeIA code col row =
+    clear_graph ();
+    set_color red;
+    fill_rect 50 50 100 75;
+    set_color black;
+    set_color black;
+    moveto 250 400;
+    (*grille*)
+    for i = 0 to col do
+      lineto (current_x ()) (current_y () + 75);
+      moveto (current_x () + (500 / col)) (current_y () - 75);
+    done;
+    moveto 250 400;
+    for i = 0 to 1 do
+      lineto (current_x () + 500) (current_y ()); 
+      moveto (current_x () - 500) (current_y () + 75);
+    done;
+    let delta = (500 / col) in drawCode (250 + delta/2) (438) code delta 30;
+    let code = selectionCouleurChoisieIA code col row in choisieCodeIA code col row;
+    
+  and selectionCouleurChoisieIA codeSelection col row =
+    let e = Graphics.wait_next_event [Graphics.Button_down] in
+    if e.Graphics.mouse_x > 250 && e.Graphics.mouse_x < 750 && e.Graphics.mouse_y > 400 && e.Graphics.mouse_y < 475 then
+      let position = map_selection e.Graphics.mouse_x col in changement_code position codeSelection
+    else if e.Graphics.mouse_x > 50 && e.Graphics.mouse_x < 150 && e.Graphics.mouse_y > 50 && e.Graphics.mouse_y < 125 then 
+      let s = tous in ecranJeuIA 4 15 [] ["Noir";"Noir";"Noir";"Noir"] codeSelection s
+    else
+      codeSelection;;
+
+
+
+  let rec ecranChoix () =
+    clear_graph;
+    set_color red;
+    fill_rect 200 500 150 50;
+    fill_rect 600 500 150 50;
+    set_color black;
+    moveto 250 560;
+    draw_string "contre IA";
+    moveto 650 560;
+    draw_string "contre joueur";
+    let e = Graphics.wait_next_event [Graphics.Button_down] in
+    if e.Graphics.mouse_x > 200 && e.Graphics.mouse_x < 350 && e.Graphics.mouse_y > 500 && e.Graphics.mouse_y < 550 then
+      choisieCodeIA ["Noir";"Noir";"Noir";"Noir"] 4 4
+    else if e.Graphics.mouse_x > 500 && e.Graphics.mouse_x < 750 && e.Graphics.mouse_y > 500 && e.Graphics.mouse_y < 550 then
+      choisiecol 10
+    else
+      ecranChoix ();;
+
+
+
+
   let ecranDepart () =
     open_graph "";
     set_window_title "thomas c'est le plus fort";
     resize_window 1000 1200;
-    moveto 450 500;
-    draw_string "coucou t'es pret a jouer";
-    moveto 450 450;
-    draw_string "o pour creer un code n pour deviner un code";
-    let s = tous in ecranJeuIA 4 15 [] ["Noir";"Noir";"Noir";"Noir"] ["Vert";"Rouge";"Noir";"Noir"] s ;;
-    (* choisiecol 10;; *)
-    (* attentInput ();; *)
+    ecranChoix ();;
 
 end;;
