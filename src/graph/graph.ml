@@ -4,7 +4,6 @@ open Draw;;
 let couleurs = Array.of_list ["Rouge"; "Bleu"; "Cyan"; "Fonce"; "Jaune"; "Orange"; "Rose"; "Vert"; "Violet"];;
 let scores = Array.of_list ["Blanc"; "Noir"; "Null"];;
 
-
 let find_couleur_index xs x =
   let i = ref (-1) in
   let () = Array.iteri (fun n elt -> if x = elt then i := n else ()) xs in
@@ -59,12 +58,22 @@ let rec find_couleur liste =
   | _ ->
      find_couleur liste;;
 
+let rec wait_quit_event () =
+  let event = wait_event() in
+  match event with
+  | KEYDOWN {keysym=KEY_ESCAPE} ->
+     print_endline "Merci d'avoir joué <3";
+  | _ ->
+     wait_quit_event ();;
+
 let () =
   Draw.init_draw_module "Mastermind - Paul & Thomas";
   Draw.draw_board_background;
   Draw.draw_pions [["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]; ["Vert"; "Vert"; "Vert"; "Vert"]];
-  Draw.draw_score [(0, 1); (0, 2); (0, 4); (1, 3); (2, 2); (0,0)];
-  Sdltimer.delay 1000;;
+  Draw.draw_score [(1, 1); (1, 4); (3, 1); (1, 2); (1, 2); (2, 2); (1, 1); (0, 2); (2, 0); (4, 0)];
+  print_int (Draw.menu_type_de_partie "test 1" ["1"; "2"; "4"]);
+  print_endline "";
+  wait_quit_event ();;
   (* print_list (Array.to_list (find_couleur (Array.of_list ["Vert"; "Bleu"; "Rose"; "Blanc"])));
    * print_score (convert_liste_to_score (Array.to_list (find_score (Array.of_list ["Noir"; "Null"; "Null"; "Null"]))));; *)
 

@@ -1,0 +1,3 @@
+open Sdlevenet;;
+
+let screen = Sdlvideo.set_video_mode screenWidth screenHeight [`DOUBLEBUF];;
