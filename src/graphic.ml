@@ -167,7 +167,7 @@ end = struct
       codeSelection;;
 
   let rec codeRandome acc =
-      if acc < 3 then
+      if acc < 4 then
         let possible = ["Vert";"Bleu";"Orange";"Noir";"Blanc";"Rouge";"Blanc"] in
         let nombre = Random.int (List.length possible) in (List.nth possible nombre) :: codeRandome (acc + 1)
       else
@@ -311,21 +311,23 @@ end = struct
     set_color red;
     fill_rect 200 500 150 50;
     fill_rect 600 500 150 50;
+    fill_rect 400 300 150 50;
     set_color black;
-    moveto 250 560;
-    draw_string "contre IA";
-    moveto 650 560;
-    draw_string "contre joueur";
+    moveto 240 560;
+    draw_string "joueur contre IA";
+    moveto 640 560;
+    draw_string "joueur contre joueur";
+    moveto 440 360;
+    draw_string "IA contre joueur";
     let e = Graphics.wait_next_event [Graphics.Button_down] in
     if e.Graphics.mouse_x > 200 && e.Graphics.mouse_x < 350 && e.Graphics.mouse_y > 500 && e.Graphics.mouse_y < 550 then
       choisieCodeIA ["Noir";"Noir";"Noir";"Noir"] 4 4
     else if e.Graphics.mouse_x > 500 && e.Graphics.mouse_x < 750 && e.Graphics.mouse_y > 500 && e.Graphics.mouse_y < 550 then
       choisiecol 10
+    else if e.Graphics.mouse_x > 400 && e.Graphics.mouse_x < 550 && e.Graphics.mouse_y > 300 && e.Graphics.mouse_y < 350 then
+      let test = ecranJeu 4 10 [] ["Noir";"Noir";"Noir";"Noir"] (codeRandome 0) in ()
     else
       ecranChoix ();;
-
-
-
 
   let ecranDepart () =
     open_graph "";
