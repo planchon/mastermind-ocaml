@@ -4,66 +4,45 @@ open Sdlevent;;
 let nombre_de_pion = int_of_string (Sys.argv.(1));;
 
 let couleurs = Array.of_list ["Rouge"; "Bleu"; "Cyan"; "Fonce"; "Jaune"; "Orange"; "Rose"; "Vert"; "Violet"];;
-let scores = Array.of_list ["Blanc"; "Noir"; "Null"];;
+let scores_ = Array.of_list ["Blanc"; "Noir"; "Null"];;
 
 let find_couleur_index xs x =
   let i = ref (-1) in
   let () = Array.iteri (fun n elt -> if x = elt then i := n else ()) xs in
   !i
   
-let print_list liste =
-  for i=0 to ((List.length liste) - 1) do
-          print_string (" " ^ (List.nth liste i));
-  done;
-  print_endline "";;
-
 let convert_liste_to_score liste =
   (List.fold_left (fun x y -> if y = "Noir" then (x + 1) else x) 0 liste, List.fold_left (fun x y -> if y = "Blanc" then (x + 1) else x) 0 liste);;
 
-let print_score score =
-  print_int (fst score);
-  print_int (snd score);;
-
-let rec find_score liste = 
+let rec find_mouse () =
   let event = wait_event() in
   match event with
-  | MOUSEBUTTONDOWN e ->
-     if (Draw.mouse_event e) = 0 then
-             begin
-                     liste;
-             end
-     else
-             begin
-                     let pos = (find_couleur_index scores (Array.get liste ((Draw.mouse_event e) - 1))) in
-                     Array.set liste ((Draw.mouse_event e) - 1) (Array.get scores ((pos + 1) mod Array.length scores));
-                     Draw.draw_interactive_pion (Array.to_list liste);
-                     find_score liste;
-             end     
-  | _ ->
-     find_score liste;;
+  | KEYDOWN {keysym=KEY_ESCAPE} ->
+     print_endline "Merci d'avoir joué <3";
+     exit 0;
+  | QUIT ->
+     print_endline "Merci d'avoir joué <3";
+     exit 0;
+  | MOUSEBUTTONDOWN e when (Draw.mouse_event e) >= 0 ->
+     Draw.mouse_event e;
+  | _ -> find_mouse ();;
 
-let rec find_couleur liste =
-  let event = wait_event() in
-  match event with
-  | MOUSEBUTTONDOWN e ->
-     if (Draw.mouse_event e) = 0 then
-             begin
-                     liste;
-             end
-     else
-             begin
-                     let pos = (find_couleur_index couleurs (Array.get liste ((Draw.mouse_event e) - 1))) in
-                     Array.set liste ((Draw.mouse_event e) - 1) (Array.get couleurs ((pos + 1) mod Array.length couleurs));
-                     Draw.draw_interactive_pion (Array.to_list liste);
-                     find_couleur liste;
-             end     
-  | _ ->
-     find_couleur liste;;
+let rec find liste liste_ref = 
+  let mouse = find_mouse () in
+  match mouse with
+  | 0 -> liste;
+  | a ->
+     let pos = (find_couleur_index liste_ref (Array.get liste (a - 1))) in
+     Array.set liste (a - 1) (Array.get liste_ref ((pos + 1) mod Array.length liste_ref));
+     Draw.draw_interactive_pion (Array.to_list liste);
+     find liste liste_ref;;
 
 let rec wait_quit_event () =
   let event = wait_event() in
   match event with
   | KEYDOWN {keysym=KEY_ESCAPE} ->
+     print_endline "Merci d'avoir joué <3";
+  | QUIT ->
      print_endline "Merci d'avoir joué <3";
   | _ ->
      wait_quit_event ();;
@@ -107,27 +86,33 @@ let generate_dummy () =
     else
             tmp;
   in foo [] nombre_de_pion;;
-  
+
+let generate_dummy_score () =
+  let rec foo tmp add =
+    if add > 0 then
+            foo (tmp @ ["Null"]) (add - 1)
+    else
+            tmp;
+  in foo [] nombre_de_pion;; 
+
 
 let joueur_vs_joueur pseudos () =
   let premier = (Random.int 2) in
   let pseudos = [List.nth pseudos premier; List.nth pseudos ((premier + 1) mod 2)] in
   Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
   Draw.draw_interactive_pion (generate_dummy ());
-  let secret = (Array.to_list (find_couleur (Array.of_list (generate_dummy ())))) in
+  let secret = (Array.to_list (find (Array.of_list (generate_dummy ())) couleurs)) in
 
   Draw.draw_board_background ();
   Draw.draw_interactive_pion (generate_dummy ());
   Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
   
-  let essais_premier = (Array.to_list (find_couleur (Array.of_list (generate_dummy ())))) in
+  let essais_premier = (Array.to_list (find (Array.of_list (generate_dummy ())) couleurs)) in
 
   mettre_a_jour_ecran [essais_premier] [(0,0)];
   Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
-
-  Draw.draw_interactive_pion ["Noir"; "Noir"; "Null"; "Null"];
   
-  let code = (convert_liste_to_score (Array.to_list (find_score (Array.of_list ["Null"; "Null"; "Null"; "Null"])))) in
+  let code = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score())) scores_))) in
   
   if (snd code) = nombre_de_pion then
           begin
@@ -145,16 +130,16 @@ let joueur_vs_joueur pseudos () =
                                     Draw.draw_interactive_pion (List.hd (List.rev pions));
                                     Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
                                     
-                                    let essais = (Array.to_list (find_couleur (Array.of_list (List.hd (List.rev pions))))) in
+                                    let essais = (Array.to_list (find (Array.of_list (List.hd (List.rev pions))) couleurs)) in
                                     let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in
 
                                     mettre_a_jour_ecran tmpPions tmpCode;
-                                    Draw.draw_interactive_pion ["Null"; "Null"; "Null"; "Null"];                    
+                                    Draw.draw_interactive_pion (generate_dummy_score ());                    
                                     Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
                                     
-                                    let code = (convert_liste_to_score (Array.to_list (find_score (Array.of_list ["Null"; "Null"; "Null"; "Null"])))) in
+                                    let score = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score ())) scores_))) in
                                     
-                                    if (snd code) = nombre_de_pion then
+                                    if (snd score) = nombre_de_pion then
                                             begin
                                                     Draw.clearScreen Draw.screen;
                                                     Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
@@ -162,7 +147,7 @@ let joueur_vs_joueur pseudos () =
                                                     wait_quit_event ();
                                             end
                                     else
-                                            jouer (vie - 1) tmpPions ((List.rev (List.tl (List.rev tmpCode))) @ [code])
+                                            jouer (vie - 1) tmpPions ((List.rev (List.tl (List.rev tmpCode))) @ [score])
                             end
                     else
                             begin

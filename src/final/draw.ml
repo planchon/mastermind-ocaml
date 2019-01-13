@@ -161,7 +161,8 @@ end = struct
                                   drawImage board.bg.pion_milieu (((82 + 22 * ((nombre_de_pion - 3) / 2)) + 47) + 81 + i * 52) 0 screen;
                           done;
                           drawImage board.bg.pion_droite (((82 + 22 * ((nombre_de_pion - 3) / 2)) + 47) + 81 + (nombre_de_pion - 2) * 52) 0 screen;
-                  end;;
+                  end;
+          drawImage board.bg.tick ((50 + 81 + 22 * ((nombre_de_pion - 4) / 2) + 31) / 2 - (10 * ((nombre_de_pion + 1) mod 2)) - 5)  719 screen;;
         
         (* prend une liste de pion de type pion et retourne la couleur et les affiche *) 
         let draw_pion_liste pions y =
