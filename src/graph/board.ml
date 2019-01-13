@@ -48,7 +48,8 @@ sig
         val init_pion_images  : board_pion_images
         val init_score_image  : board_score_image
         val init_board        : board_image
-          
+
+        val pion_of_couleur : string -> board_image -> Sdlvideo.surface
 end = struct
 
         type board_background_images =
@@ -133,5 +134,20 @@ end = struct
                   score = init_score_image;
                   pion  = init_pion_images;
                   bg    = init_board_images;
-          };;        
+          };;
+
+        let pion_of_couleur col board =
+          match col with
+          | "Rouge"  -> board.pion.rouge;
+          | "Bleu"   -> board.pion.bleu;
+          | "Cyan"   -> board.pion.cyan;
+          | "Fonce"  -> board.pion.fonce;
+          | "Blanc"  -> board.pion.grand_blanc;
+          | "Noir"   -> board.pion.grand_noir;
+          | "Jaune"  -> board.pion.jaune;
+          | "Orange" -> board.pion.orange;
+          | "Rose"   -> board.pion.rose;
+          | "Vert"   -> board.pion.vert;
+          | "Violet" -> board.pion.violet;;                      
+                      
 end;;  

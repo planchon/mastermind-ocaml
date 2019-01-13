@@ -1,2 +1,0 @@
-menu.cmo :
-menu.cmx :

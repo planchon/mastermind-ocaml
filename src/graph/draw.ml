@@ -1,13 +1,33 @@
 open Board;;
+open Sdlevent;;
 
 module Draw :
 sig
         val init_draw_module :string -> unit
         val clearScreen : Sdlvideo.surface -> unit
         val drawImage : Sdlvideo.surface -> int -> int -> Sdlvideo.surface -> unit
-          val draw_board_background : int -> Sdlvideo.surface -> unit
+        val draw_board_background : unit
+        val mouse_event : mousebutton_event -> int
+        val draw_interactive_pion : string list -> unit
+                
 end = struct
+        let nombre_de_pion = 11;;
+
+        let screenWidth =
+          if nombre_de_pion mod 2 = 0 then
+                  (82 + 22 * ((nombre_de_pion - 4) / 2) + 47 + 81 + 52 * (nombre_de_pion - 2) + 182)
+          else
+                  (82 + 22 * ((nombre_de_pion - 3) / 2) + 47 + 81 + 52 * (nombre_de_pion - 2) + 182);;
+        let screenHeight = 800;;
+        
         let board = Board.init_board;;
+        let screen = Sdlvideo.set_video_mode screenWidth screenHeight [`DOUBLEBUF];;
+
+        let const_pion_start =
+          if nombre_de_pion mod 2 = 0 then
+                  ((((82 + 22 * ((nombre_de_pion - 4) / 2)) + 47)))
+          else
+                  ((((82 + 22 * ((nombre_de_pion - 3) / 2)) + 47)));;
         
         let init_draw_module title =
           Sdl.init [`VIDEO];
@@ -24,8 +44,26 @@ end = struct
         let clearScreen screen =
           Sdlvideo.fill_rect screen (Sdlvideo.map_RGB screen Sdlvideo.black);
           Sdlvideo.flip screen;;
+        
+        let mouse_event e =
+          (* on est dans la bonne zone horizontale *)
+          let x = (e.mbe_x) and y = e.mbe_y in
+          if (y > 711) && (y < 764) && (x > 50) && (x < const_pion_start - 14) then
+                  0
+          else
+                  if (y > 726) && (y < 750) then
+                          ((x - const_pion_start) + 10) / 52
+                  else
+                         -1;; 
 
-        let draw_board_background nombre_de_pion screen =
+        (* prend une liste de pion de type pion et retourne la couleur et les affiche *) 
+        let draw_interactive_pion pions =
+          let pions = Array.of_list pions in
+          for i = 0 to (Array.length pions) - 1 do
+                  drawImage (Board.pion_of_couleur (Array.get pions i) board) (const_pion_start + 42 + i * 52) 726 screen;
+          done;;
+
+        let draw_board_background =
           drawImage board.bg.score_gauche 0 0 screen;
           if nombre_de_pion mod 2 = 0 then
                   begin
