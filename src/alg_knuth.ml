@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 (** Algorithmes de recherche de code *)
 module IA :
 sig
@@ -121,3 +122,15 @@ end = struct
 		else
 			(float_of_int (fst essaie)) /. (float_of_int (snd essaie)) +. 1.;;
 end ;;
+=======
+(* implementation de l'algorithme de Knuth *)
+open Code;;
+module ALG_Knuth:
+sig        
+        val filtre_ : (int * int) -> Code.t list -> Code.t -> Code.t list
+        val algo : Code.t list -> Code.t list -> Code.t
+end = struct
+        let algo propose possible = ["code"];;
+        let filtre_ reponse possible lastCode = [["code"]];;
+end;;
+>>>>>>> master
