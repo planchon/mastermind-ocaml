@@ -143,15 +143,17 @@ end = struct
           match col with
           | "Rouge"  -> board.pion.rouge;
           | "Bleu"   -> board.pion.bleu;
-          | "Cyan"   -> board.pion.cyan;
-          | "Fonce"  -> board.pion.fonce;
           | "Blanc"  -> board.pion.grand_blanc;
           | "Noir"   -> board.pion.grand_noir;
-          | "Jaune"  -> board.pion.jaune;
           | "Orange" -> board.pion.orange;
-          | "Rose"   -> board.pion.rose;
           | "Vert"   -> board.pion.vert;
           | "Null"   -> board.pion.null;
-          | "Violet" -> board.pion.violet;;                      
+
+          (*
+          | "Cyan"   -> board.pion.cyan;
+          | "Fonce"  -> board.pion.fonce;
+          | "Rose"   -> board.pion.rose;
+          | "Jaune"  -> board.pion.jaune;
+          | "Violet" -> board.pion.violet;; *)                      
                       
 end;;  

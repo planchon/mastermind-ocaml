@@ -84,7 +84,7 @@ end = struct
 	let choix algo codeDeja codePossible =
 		if algo = 0 then
 			["Bleu";"Bleu";"Vert";"Vert"]
-		else if algo = 1 then 
+		else if algo = 1 then
 			minMax (0,0) codePossible
 		else
 			List.nth codePossible (Random.int (List.length codePossible));;
