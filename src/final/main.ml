@@ -212,7 +212,7 @@ let joueur_vs_machine pseudos () =
 						mettre_a_jour_ecran pions scores;
 						Draw.draw_interactive_pion (List.hd (List.rev pions));
 						Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
-
+              
 						let essais = Alg_knuth.choix 1 [] codePossible in
 						let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in
 
