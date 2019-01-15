@@ -82,7 +82,9 @@ end = struct
 	
 	(* choisie le prochain code a tester en fonction de l'algorithme choisie (random ou minMax)*)
 	let choix algo codeDeja codePossible =
-		if algo = 0 then
+		if (List.length codePossible) = 1 then
+			List.nth codePossible 0
+		else if algo = 0 then
 			["Bleu";"Bleu";"Vert";"Vert"]
 		else if algo = 1 then
 			minMax (0,0) codePossible

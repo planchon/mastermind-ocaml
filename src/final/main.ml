@@ -217,7 +217,9 @@ let joueur_vs_machine pseudos () =
 						let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in
 
 						mettre_a_jour_ecran tmpPions tmpCode;
-						Draw.draw_interactive_pion (generate_dummy_score ());                    
+            print_int (List.length codePossible); 
+            print_string ("/n");
+            Draw.draw_interactive_pion (generate_dummy_score ());                    
 						Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
 						
 						let score = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score ())) scores_))) in
