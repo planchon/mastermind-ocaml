@@ -100,12 +100,18 @@ let generate_dummy_score () =
             tmp;
   in foo [] nombre_de_pion;; 
 
+let rec code_random temp =
+  if temp > 0 then
+    (Array.get couleurs (Random.int (Array.length couleurs))) :: code_random (temp - 1)   
+  else
+    [];;
+
 let machine_vs_joueur pseudos () =
   let premier = 1 in
   let pseudos = [List.nth pseudos premier; List.nth pseudos ((premier + 1) mod 2)] in
   Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
   Draw.draw_interactive_pion (generate_dummy ());
-  let tous_code = Code.tous in let secret = List.nth tous_code (Random.int (List.length tous_code)) in
+  let secret = code_random nombre_de_pion in
   Draw.draw_board_background ();
   Draw.draw_interactive_pion (generate_dummy ());
   Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
