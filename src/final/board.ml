@@ -148,12 +148,11 @@ end = struct
           | "Orange" -> board.pion.orange;
           | "Vert"   -> board.pion.vert;
           | "Null"   -> board.pion.null;
-
-          (*
           | "Cyan"   -> board.pion.cyan;
           | "Fonce"  -> board.pion.fonce;
           | "Rose"   -> board.pion.rose;
           | "Jaune"  -> board.pion.jaune;
-          | "Violet" -> board.pion.violet;; *)                      
+          | "Violet" -> board.pion.violet;;                       
                       
 end;;  
+
