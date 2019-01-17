@@ -6,8 +6,8 @@ sig
 	val nombre_methodes : int
 	(** Choisit un code a proposer
 	* @param methode 
-	*       0 pour l ' algorithme naif,
-	*       1 pour l ' algorithme de KNUTH
+	*       1 pour l ' algorithme naif,
+	*       0 pour l ' algorithme de KNUTH
 	*       ... et ainsi de suite
 	* @param essais la liste des codes deja proposes
 	* @param possibles la liste des codes possibles
