@@ -83,6 +83,12 @@ end = struct
                     render_text text x y;
             let event = wait_event() in
             match event with
+            | KEYDOWN {keysym=KEY_ESCAPE} ->
+               print_endline "Merci d'avoir joué <3";
+               exit 0;
+            | QUIT ->
+               print_endline "Merci d'avoir joué <3";
+               exit 0;
             | KEYDOWN {keysym = KEY_RETURN} ->
                text;
             | KEYDOWN e when (((Sdlkey.int_of_key e.keysym) > 31) && ((Sdlkey.int_of_key e.keysym) < 123)) ->
@@ -117,11 +123,17 @@ end = struct
         let menu_type_de_partie text option =
           render_text_center text;
           render_text (List.nth option 0) (screenWidth / 2 - 200) (screenHeight / 2 + 15);
-          render_text (List.nth option 1) (screenWidth / 2 - 20) (screenHeight / 2 + 15);
-          render_text (List.nth option 2) (screenWidth / 2 + 150) (screenHeight / 2 + 15);
+          render_text (List.nth option 1) (screenWidth / 2 - 50) (screenHeight / 2 + 15);
+          render_text (List.nth option 2) (screenWidth / 2 + 90) (screenHeight / 2 + 15);
           let rec foo () =
             let event = wait_event() in
             match event with
+            | KEYDOWN {keysym=KEY_ESCAPE} ->
+               print_endline "Merci d'avoir joué <3";
+               exit 0;
+            | QUIT ->
+               print_endline "Merci d'avoir joué <3";
+               exit 0;
             | MOUSEBUTTONDOWN e ->
                begin
                        match e.mbe_x with

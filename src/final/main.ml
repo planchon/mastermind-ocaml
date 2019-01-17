@@ -278,6 +278,8 @@ let _joueur_vs_machine pseudos algo () =
 	  end;;
 
 let fonction_score pions score pseudo =
+  let _score = List.split score in
+  let score = List.combine (snd _score) (fst _score) in
   mettre_a_jour_ecran pions score;
   Draw.draw_interactive_pion (generate_dummy_score ());                    
   Draw.render_text_center_y (pseudo ^ " mets le score") 5;
@@ -285,7 +287,6 @@ let fonction_score pions score pseudo =
   let tmp = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score ())) scores_))) in
   (snd tmp, fst tmp);;
   
-
 let joueur_vs_machine pseudos algo () =
   if ((algo = 0) || (algo = 2)) then
           _joueur_vs_machine pseudos algo ()
