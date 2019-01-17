@@ -63,13 +63,13 @@ def check_play(ai_choice, right_choice):
     return (placeTrue, placeFalse)
 
 
-def fitness_score(trial, code, guesses, slots=4):
+def fitness_score(trial, guesses, slots=4):
     # prend un code a tester -> trial (fils)
     # prend le "code" -> PAPA
     # prend tous les codes deja test -> guesses
     '''
     fitness score function
-    takes a `trial`(chromose) and compare it to a reference `code` (papa)
+    takes a `trial`(chromose) and compare it to a reference `code`
     it returns a score based on the quality of `trial` being a probable guess
     of `code`
     '''
@@ -88,9 +88,10 @@ def fitness_score(trial, code, guesses, slots=4):
         # we then establish the score our `trial` color would obtain
 
         trial_result = check_play(trial, guess_code)
-
+        
         # We get the difference between the scores
         dif = [0, 0]
+
         for i in range(2):
             dif[i] = abs(trial_result[i] - guess_result[i])
 
@@ -234,7 +235,6 @@ def genetic_evolution(popsize, generations, costfitness,
             eligibles = new_eligibles
 
         # We remove the eligible codes already included in the elite choices (Ei)
-
         for code in eligibles:
             if code in chosen_ones:
                 chosen_ones.remove(code)
@@ -256,8 +256,7 @@ def genetic_evolution(popsize, generations, costfitness,
 
         # Prepare the parent population for the next generation based
         # on the current generation
-        population = []
-        population.extend(eligibles)
+        population = eligibles
 
         # We fill the rest of the population with random codes up to popsize
         j = len(eligibles)
@@ -297,7 +296,7 @@ def usage():
 def main():
 
     def scoref(trial):
-        return fitness_score(trial, code, guesses, slots=4)
+        return fitness_score(trial, guesses, slots=4)
 
     # initialisation du soft avec le nombre de couleur et le code a trouver
     if len(sys.argv) != 3:
@@ -326,6 +325,8 @@ def main():
     guesses.append((code, result))
 
     last_eligibles = []
+
+    print str(fitness_score(code,[(code, (2,0))]))
     while result != (4, 0):  # while X_i \neq P
 
         # initialise la population
@@ -334,8 +335,6 @@ def main():
         print('taille de la population a tester', len(eligibles))
 
         while len(eligibles) == 0:
-            print('la taille de la population est nulle')
-            print(guesses)
             eligibles = genetic_evolution(
                 MAX_POP_SIZE*2, MAX_GENERATIONS/2, scoref, slots=4)
 

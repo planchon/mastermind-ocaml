@@ -56,21 +56,8 @@ sig
 end = struct    
         type pion = string;;
         type t = pion list;;
-
-        let nombre_pion = int_of_string (Sys.argv.(1));;
-        let nombre_couleurs = int_of_string (Sys.argv.(2));;
-        
-        let couleurs = Array.of_list ["Vert"; "Rouge"; "Bleu"; "Orange"; "Noir"; "Blanc"; "Cyan"; "Fonce"; "Rose";"Jaune" ;"Violet" ];;
-        
-        let rec ajustement_couleurs param temp =
-          if param > 0 then
-            (Array.get couleurs temp) :: ajustement_couleurs (param - 1) (temp + 1)
-          else 
-            [];;
-        
-        let couleur_possibles = (ajustement_couleurs nombre_couleurs 0);;
-        
-
+        let nombre_pion = 4;;
+        let couleur_possibles = ["Rouge"; "Vert"; "Bleu"; "Orange"; "Noir"; "Blanc"];;
 
         let compare code1 code2 =
           match (code1, code2) with

@@ -1,0 +1,2 @@
+open Str;;
+open Graphics;;

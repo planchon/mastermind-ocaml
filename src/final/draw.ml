@@ -132,9 +132,6 @@ end = struct
             | _ ->
                foo ();
           in foo ();;
-
-        let menu_ia () =
-          render_text_center "Quel niveau d'intelligence artificielle ?";;
         
         let draw_board_background () =
           drawImage board.bg.score_gauche 0 0 screen;
