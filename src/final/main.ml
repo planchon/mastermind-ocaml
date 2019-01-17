@@ -205,7 +205,7 @@ let joueur_vs_machine pseudos algo () =
 	Draw.draw_interactive_pion (generate_dummy ());
 	Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
   
-  let essais_premier = Alg_knuth.choix 1 [] (Code.tous) in	
+  let essais_premier = Alg_knuth.choix 1 [] (Code.tous) in
   mettre_a_jour_ecran [essais_premier] [(0,0)];
     
 	Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
