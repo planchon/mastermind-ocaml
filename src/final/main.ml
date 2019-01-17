@@ -4,9 +4,22 @@ open Code;;
 open Alg_knuth;;
 
 let nombre_de_pion = int_of_string (Sys.argv.(1));;
+let nombre_de_couleurs = int_of_string (Sys.argv.(2));;
 
-let couleurs = Array.of_list ["Rouge"; "Vert"; "Bleu"; "Orange"; "Noir"; "Blanc"];;
+
+(* let couleurs = Array.of_list ["Rouge"; "Vert"; "Bleu"; "Orange"; "Noir"; "Blanc"];;*)
+
+let couleurs = Array.of_list ["Vert"; "Rouge"; "Bleu"; "Orange"; "Noir"; "Blanc"; "Cyan"; "Fonce"; "Rose";"Jaune" ;"Violet" ];;
 let scores_ = Array.of_list ["Blanc"; "Noir"; "Null"];;
+
+let rec ajustement_couleurs param temp =
+  if param > 0 then
+    (Array.get couleurs temp) :: ajustement_couleurs (param - 1) (temp + 1)
+  else 
+    [];;
+
+let couleurs = Array.of_list (ajustement_couleurs nombre_de_couleurs 0);;
+
 
 let find_couleur_index xs x =
   let i = ref (-1) in
@@ -100,12 +113,19 @@ let generate_dummy_score () =
             tmp;
   in foo [] nombre_de_pion;; 
 
+let rec code_random temp =
+  if temp > 0 then
+    (Array.get couleurs (Random.int (Array.length couleurs))) :: code_random (temp - 1)   
+  else
+    [];;
+
 let machine_vs_joueur pseudos () =
+	Draw.draw_board_background ();
   let premier = 1 in
   let pseudos = [List.nth pseudos premier; List.nth pseudos ((premier + 1) mod 2)] in
   Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
   Draw.draw_interactive_pion (generate_dummy ());
-  let tous_code = Code.tous in let secret = List.nth tous_code (Random.int (List.length tous_code)) in
+  let secret = code_random nombre_de_pion in
   Draw.draw_board_background ();
   Draw.draw_interactive_pion (generate_dummy ());
   Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
@@ -164,23 +184,24 @@ let machine_vs_joueur pseudos () =
     end;;
 
 
-let joueur_vs_machine pseudos () =
+let joueur_vs_machine pseudos algo () =
+	Draw.draw_board_background ();
   let premier = 0 in
   let pseudos = [List.nth pseudos premier; List.nth pseudos ((premier + 1) mod 2)] in
-  Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
-  Draw.draw_interactive_pion (generate_dummy ());
-  let secret = (Array.to_list (find (Array.of_list (generate_dummy ())) couleurs)) in
+	Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
+	Draw.draw_interactive_pion (generate_dummy ());
+	let secret = (Array.to_list (find (Array.of_list (generate_dummy ())) couleurs)) in
 
-  Draw.draw_board_background ();
-  Draw.draw_interactive_pion (generate_dummy ());
-  Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
+	Draw.draw_board_background ();
+	Draw.draw_interactive_pion (generate_dummy ());
+	Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
   
-  let essais_premier = Alg_knuth.choix 0 [] [] in	
+  let essais_premier = Alg_knuth.choix 1 [] (Code.tous) in	
   mettre_a_jour_ecran [essais_premier] [(0,0)];
     
-  Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
-  
-  let code = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score())) scores_))) in 
+	Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
+	
+	let code = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score())) scores_))) in 
   (*c'est quoi cette fonction de code ????*)
   let vrai_code = Code.reponse essais_premier secret in
   
@@ -200,22 +221,24 @@ let joueur_vs_machine pseudos () =
     end
   else
 		begin
-			let rec jouer vie pions scores codePossible secret=
+			let rec jouer vie pions scores codePossible secret algo=
 				if vie != 0 then (*si le joueur a encore des essaies*)
 					begin
 						mettre_a_jour_ecran pions scores;
 						Draw.draw_interactive_pion (List.hd (List.rev pions));
 						Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
-
-						let essais = Alg_knuth.choix 1 [] codePossible in
+              
+						let essais = Alg_knuth.choix algo [] codePossible in
 						let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in
 
 						mettre_a_jour_ecran tmpPions tmpCode;
-						Draw.draw_interactive_pion (generate_dummy_score ());                    
+            Draw.draw_interactive_pion (generate_dummy_score ());                    
 						Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
 						
 						let score = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score ())) scores_))) in
             let vrai_code = Code.reponse essais secret in
+
+            
 						if (snd score) = nombre_de_pion then (*si le joueur a gagner*)
 							begin
 								Draw.clearScreen Draw.screen;
@@ -231,8 +254,8 @@ let joueur_vs_machine pseudos () =
                 wait_quit_event ();
               end
 						else (*sinon relance un tour*)
-							let codePossible = Alg_knuth.filtre 1 (essais,(snd score,fst score)) codePossible in
-							jouer (vie - 1) tmpPions ((List.rev (List.tl (List.rev tmpCode))) @ [score]) codePossible secret
+							let codePossible = Alg_knuth.filtre algo (essais,(snd score,fst score)) codePossible in
+							jouer (vie - 1) tmpPions ((List.rev (List.tl (List.rev tmpCode))) @ [score]) codePossible secret algo
 					end
 				else (*si le jouer a utiliser tt ces essaies*)
 					begin
@@ -241,10 +264,11 @@ let joueur_vs_machine pseudos () =
 						Draw.render_text_center_y "escape pour sortir" 600;
 						wait_quit_event ();
 					end
-				in jouer 9 [essais_premier] [code] (Alg_knuth.filtre 1 (essais_premier,(snd code,fst code)) Code.tous) secret;
+				in jouer 9 [essais_premier] [code] (Alg_knuth.filtre algo (essais_premier,(snd code,fst code)) Code.tous) secret algo;
 		end;;
 
 let joueur_vs_joueur pseudos () =
+	Draw.draw_board_background ();
   let premier = (Random.int 2) in
   let pseudos = [List.nth pseudos premier; List.nth pseudos ((premier + 1) mod 2)] in
   Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
@@ -306,20 +330,29 @@ let joueur_vs_joueur pseudos () =
 						wait_quit_event ();
 					end
 					in jouer 9 [essais_premier] [code]; (*JSP a quoi ca sert...*)
-		end;;
+    end;;
+    
+let rec ajustement_couleurs param temp =
+  if param > 0 then
+    (Array.get couleurs temp) :: ajustement_couleurs (param - 1) (temp + 1)
+  else 
+    [];;
 
 let () =
   Random.self_init ();
+
+  let couleurs = Array.of_list (ajustement_couleurs nombre_de_couleurs 0) in
+  let couleur_possibles = Array.to_list couleurs in 
   Draw.init_draw_module "Mastermind - Paul & Thomas";
 
   let type_de_partie = Draw.menu_type_de_partie "Comment voulez vous jouer?" ["JvJ"; "OvJ"; "JvO"] in
   let pseudos = trouver_pseudo type_de_partie in
-  
-  Draw.draw_board_background ();
+
+  Draw.clearScreen Draw.screen;
 
   match type_de_partie with
   | 0 -> joueur_vs_joueur (list_of_tuple pseudos) ();
-  | 1 -> joueur_vs_machine (list_of_tuple pseudos) ();
+  | 1 -> joueur_vs_machine (list_of_tuple pseudos) (Draw.menu_type_de_partie "Quel algo veux tu ?" ["Knuth"; "Naif"; "megaFiltre"]) ();
   | 2 -> machine_vs_joueur (list_of_tuple pseudos) ();
   
   Sdltimer.delay 10;;
