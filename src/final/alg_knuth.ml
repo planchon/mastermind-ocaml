@@ -80,23 +80,38 @@ end = struct
 	let rec minMax score s =
 		testToutCode score 0 ([], (List.length s)) s;;
 	
+
 	(* choisie le prochain code a tester en fonction de l'algorithme choisie (random ou minMax)*)
 	let choix algo codeDeja codePossible =
-		if algo = 0 then
-			["Bleu";"Bleu";"Vert";"Vert"]
-		else if algo = 1 then
+		if (List.length codePossible) = 1 then (*si 1 element dans la liste *)
+			List.nth codePossible 0
+		else if algo = 3 then
+			["Vert";"Vert";"Vert";"Vert"]
+		else if algo = 0 then (*minMax pour Knuth*)
 			minMax (0,0) codePossible
-		else
+		else if algo = 1 then (*Naif*)
+			List.nth codePossible (Random.int (List.length codePossible))
+		else 
 			List.nth codePossible (Random.int (List.length codePossible));;
+
+	let rec filtre_algo_naif code listCode =
+		if listCode != [] && code != List.hd listCode then
+			(List.hd listCode) :: filtre_algo_naif code (List.tl listCode)
+		else if code = List.hd listCode then
+			List.tl listCode
+		else
+			[];;
 
 	(*filtre les codes possibles en fonction du code d'essaie et du score obtenue*)
 	let rec filtre algo codeEssaye codePossible  = 
-		if codePossible != [] && algo = 1 then
+		if codePossible != [] && (algo = 0 || algo = 2) then
 			let rep = reponse (List.hd codePossible) (fst codeEssaye) in
 			if rep = (snd codeEssaye) then
 				(List.hd codePossible) :: filtre algo codeEssaye (List.tl codePossible) 
 			else
 				filtre algo codeEssaye (List.tl codePossible) 
+		else if algo = 1 then
+			filtre_algo_naif (fst codeEssaye) codePossible
 		else 
 			[];;
 	(*lance le test de l'algo de knuth en fonction d'un code rentré*)
