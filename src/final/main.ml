@@ -12,6 +12,11 @@ let nombre_de_couleurs = int_of_string (Sys.argv.(2));;
 let couleurs = Array.of_list ["Vert"; "Rouge"; "Bleu"; "Orange"; "Noir"; "Blanc"; "Cyan"; "Fonce"; "Rose";"Jaune" ;"Violet" ];;
 let scores_ = Array.of_list ["Blanc"; "Noir"; "Null"];;
 
+
+(** ajustement_couleurs
+* @param nombreDePions varaibleTemporaire
+* @return la liste de pion a la taille du parametre 
+*)
 let rec ajustement_couleurs param temp =
   if param > 0 then
     (Array.get couleurs temp) :: ajustement_couleurs (param - 1) (temp + 1)
@@ -113,6 +118,10 @@ let generate_dummy_score () =
             tmp;
   in foo [] nombre_de_pion;; 
 
+(** code_random
+* @param longueur du code voulu
+* @return un code rendome a la taille voulu
+*)
 let rec code_random temp =
   if temp > 0 then
     (Array.get couleurs (Random.int (Array.length couleurs))) :: code_random (temp - 1)   
