@@ -2,7 +2,6 @@ open Code;;
 
 module Alg_genetic:
 sig
-        val play : Code.t  -> int
         val make_gen_move: (Code.t * (int * int)) list -> 'a -> Code.t
           
 end = struct
@@ -25,6 +24,10 @@ end = struct
         let check_play ia_choice choice =
           Code.reponse ia_choice choice;;
 
+        (** Applique le cross over genetique a deux codes
+        *  @param code1 code2 les deux codes sur lequel le cross over est appliqué
+        *  @return le nouveau code
+        *)
         let crossover code1 code2 =
           let rec foo tmp i =
             if i >= 0 then
@@ -38,7 +41,10 @@ end = struct
                     tmp
           in foo [] (nombre_de_pion - 1);;
         
-        (* tous les codes relatifs à la genetic *)
+        (** Applique la permutation génétique au code
+        *  @param code le code ou on applique la permutation
+        *  @return le code permuté
+        *)
         let permute code =
           let a_code = Array.of_list code in
           let rec foo tmp i =
@@ -63,6 +69,10 @@ end = struct
                     Array.to_list tmp;
           in foo a_code nombre_de_pion;;
 
+        (** Applique le phenomene de mutation génétique au code
+        *  @param code le code sur lequel appliquer la mutation
+        *  @return le code muté
+        *)
         let mutate code =
           let a_code = Array.of_list code in
           let i = Random.int (nombre_de_pion - 1) in
@@ -70,6 +80,10 @@ end = struct
           Array.set a_code i c;
           Array.to_list a_code;;
 
+        (** Genere une population (un liste de code)
+        *  @param pop_size la taille de la population
+        *  @return la population
+        *)
         let generate_dummy_population pop_size =
           if pop_size > ((List.length Code.tous) - 100) then
                           let rec foo tmp i =
@@ -89,6 +103,10 @@ end = struct
           else
                   Code.tous;;
 
+        (** Genere la population de fils en appliquant les algo de génétique et la théorie de Darwin
+        *  @param population la population de parents
+        *  @return les fils de cette meme population
+        *)
         let generate_son_population population =
           let rec foo tmp i =
             if (i > 1) then
@@ -108,6 +126,11 @@ end = struct
                     tmp
           in foo [] (List.length population);;
 
+        (** Calcul le code fitness d'un code en fonction des anciens codes
+        *  @param trial le code à calculer
+        *  @param guesses les anciens code et leur reponse
+        *  @return le code fitness
+        *)
         let fitness trial guesses =
           let rec foo guess tmp =
             match guess with
@@ -120,6 +143,11 @@ end = struct
             | _ -> tmp
           in foo guesses 0;;
         
+        (** Genere la liste des codes de fitness
+        *  @param son la liste des fils
+        *  @param costfunction la fonction de fitness
+        *  @return le code à jouer
+        *)
         let generate_pop_score son costfunction =
           let rec foo tmp son =
             match son with
@@ -130,6 +158,12 @@ end = struct
             | _ -> tmp
           in foo [] son;;
 
+        (** Genere les nouvelles elite
+        *  @param ele les elites a trier
+        *  @param cho les anciennes elite
+        *  @param pop_size la taille de la population
+        *  @return les nouvelles elites
+        *)
         let generate_new_chosen_ones ele cho pop_size =
           let rec remplace_doublons tmp_ele tmp_cho =
             match tmp_ele with
@@ -146,6 +180,11 @@ end = struct
             | _ -> tmp_cho
           in remplace_doublons ele cho;;
 
+        (** Remplis la population de codes aléatoires
+        *  @param population la population a remplir
+        *  @param pop_size la taille de la population maximale
+        *  @return la population remplie
+        *)
         let fill_population population pop_size =
           let rec foo tmp =
             if (List.length tmp) < pop_size then
@@ -154,6 +193,12 @@ end = struct
                     tmp
           in foo population;;
         
+        (** Applique l'algorithme de generation génétique
+        *  @param pop_size la taille de la population
+        *  @param generation le nombre de generation
+        *  @param costfunction la fonction fitness
+        *  @return un ensemble de code possible a tester
+        *)
         let genetic_evolution pop_size generation costfunction =
           let population = (generate_dummy_population pop_size) in
           
@@ -182,6 +227,12 @@ end = struct
                     end
           in generate [] population 1;;
 
+        (** une fonction qui ne s'arrete pas temps que la liste est vide
+        *  @param func la fonction genetic_evolution
+        *  @param max_pop la taille max de la population
+        *  @param max_gen le nombre de generation maximum
+        *  @return un ensemble de code possible a tester
+        *)
         let rec do_not_return_until_not_empty func max_pop max_gen =
           let liste = (func max_pop max_gen) in 
           if (List.length liste) = 0 then
@@ -191,13 +242,21 @@ end = struct
           else
                   liste;;
 
-
+        (** Cherche le code a jouer dans une liste de code
+        *  @param ele les codes a jouer
+        *  @param guess les anciens codes joués
+        *  @return le code à jouer
+        *)
         let rec find_code ele guess =
           match ele with
           | h :: t when (List.exists (fun x -> x = h) guess) = false -> h
           | h :: t -> find_code t guess
           | _ -> [];;
 
+        (** Affiche un code
+        *  @param code le code a afficher
+        *  @return unit
+        *)
         let rec print_code code =
           match code with
           | h :: t ->
@@ -207,11 +266,16 @@ end = struct
              end    
           | _ -> print_endline "";;
 
+        (** Genere le prochaine code à tester avec l'algorithme génétique.
+        *  @param guess la liste des codes, score joués précédement.
+        *  @param last_code le dernier coup joué
+        *  @return le code à jouer
+        *)
         let rec make_gen_move guess last_code =   
           let elegible = (do_not_return_until_not_empty (fun x y -> genetic_evolution x y (fun a -> fitness a guess)) max_pop_size max_generation) in
           find_code elegible (List.fold_right (fun x liste -> liste @ [(fst x)]) guess []);;
 
-        let play secret =
+        (* let play secret =
           let do_play = (fun x -> check_play x secret) in
           let code_depart = ["Rouge"; "Rouge"; "Vert"; "Vert"] in
           let result = do_play code_depart in
@@ -232,5 +296,5 @@ end = struct
                             else
                                     1
                     end
-          in genetic result guess code_depart;;
+          in genetic result guess code_depart;; *)
 end;;

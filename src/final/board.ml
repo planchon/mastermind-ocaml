@@ -132,6 +132,9 @@ end = struct
                   grand_blanc = Sdlloader.load_image "img/grand_blanc.png";
           };;
 
+        (** load toutes les images, pour ne faire qu'une fois
+        *  @return toutes les images chargées
+        *)
         let init_board =
           {
                   score = init_score_image;
@@ -139,6 +142,11 @@ end = struct
                   bg    = init_board_images;
           };;
 
+        (** Convertis une couleur en image
+        *  @param col la couleur a convertir
+        *  @param board l'ensemble des images pour les charger qu'une fois
+        *  @return l'image
+        *)
         let pion_of_couleur col board =
           match col with
           | "Rouge"  -> board.pion.rouge;
