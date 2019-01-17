@@ -166,10 +166,13 @@ end = struct
         
         (* prend une liste de pion de type pion et retourne la couleur et les affiche *) 
         let draw_pion_liste pions y =
+          print_endline "------  PIONS  -------";
           let pions = Array.of_list pions in
           for i = 0 to (Array.length pions) - 1 do
+                  print_endline (Array.get pions i);
                   drawImage (Board.pion_of_couleur (Array.get pions i) board) (const_pion_start + 42 + i * 52) y screen;
-          done;;
+          done;
+          print_endline "------  FIN    -------";;
 
         let draw_one_score score y =
           (* pions noir *)

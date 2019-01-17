@@ -1,0 +1,202 @@
+open Code;;
+
+let secret = [3;3;3;3];;
+
+let max_pop_size                        = 60;;
+let max_generation                      = 100;;
+
+let crossover_probability               = 0.5;;
+let crossover_probability_then_mutation = 0.03;;
+let permutation_probability             = 0.03;;
+let inversion_probability               = 0.02;;
+
+let elite_ratio                         = 0.4;;
+
+let nombre_de_pion                      = 4;;
+let nombre_de_couleurs                  = 6;;
+
+let check_play ia_choice choice =
+  Code.reponse ia_choice choice;;
+
+let crossover code1 code2 =
+  let rec foo tmp i =
+    if i >= 0 then
+            begin
+                    if (Random.float 1.) > crossover_probability then
+                            foo (tmp @ [(List.nth code1 i)]) (i - 1)
+                    else
+                            foo (tmp @ [(List.nth code2 i)]) (i - 1)
+            end
+    else
+            tmp
+  in foo [] (nombre_de_pion - 1);;
+  
+(* tous les codes relatifs à la genetic *)
+let permute code =
+  let a_code = Array.of_list code in
+  let rec foo tmp i =
+    if (i > 0) then
+            begin
+                    if ((Random.float 1.) <= permutation_probability) then
+                            begin
+                                    let color_a_position = (Random.int (nombre_de_pion - 1)) in
+                                    let color_b_position = (Random.int (nombre_de_pion - 1)) in
+                                    let saved_color_a = (Array.get tmp color_a_position) in
+                                    
+                                    (Array.set tmp color_a_position (Array.get tmp color_b_position));
+                                    (Array.set tmp color_b_position saved_color_a);
+                                    foo tmp (i - 1);
+                            end
+                    else
+                            begin
+                                    foo tmp (i - 1);
+                            end
+            end
+    else
+            Array.to_list tmp;
+  in foo a_code nombre_de_pion;;
+
+let mutate code =
+  let a_code = Array.of_list code in
+  let i = Random.int (nombre_de_pion - 1) in
+  let c = (List.nth Code.couleur_possibles (Random.int ((List.length Code.couleur_possibles) - 1))) in
+  Array.set a_code i c;
+  
+  Array.to_list a_code;;
+
+let generate_dummy_population pop_size =
+  let rec foo tmp i =
+    if (i > 0) then
+            foo (tmp @ [(List.nth Code.tous (Random.int pop_size))]) (i - 1)
+    else
+            tmp
+  in foo [] pop_size;;
+
+let generate_son_population population =
+  let rec foo tmp i =
+    if i > 1 then
+            begin
+                    if (Random.float 1.) < crossover_probability_then_mutation then
+                            begin
+                                    let son = crossover (List.nth population (i - 2)) (List.nth population (i - 1)) in
+                                    foo (tmp @ [(permute(mutate(son)))]) (i - 1);
+                            end
+                    else
+                            begin
+                                    let son =  mutate (crossover (List.nth population (i - 2)) (List.nth population (i - 1))) in
+                                    foo (tmp @ [(permute(son))]) (i - 1);
+                            end
+            end
+    else
+            begin
+                    tmp;
+            end
+  in foo [] (List.length population);;
+
+let fitness trial guesses =
+  let rec foo guess tmp =
+    match guess with
+    | h :: t ->
+       begin
+               let res = (check_play trial (fst h)) in
+               let code_h = (snd h) in
+               foo t (tmp + abs((fst res) - (fst code_h)) + abs((snd res) - (snd code_h)));
+       end
+    | _ -> tmp
+  in foo guesses 0;;
+    
+let generate_pop_score son costfunction =
+  let rec foo tmp son =
+    match son with
+    | code :: t ->
+       begin
+               foo (tmp @ [((costfunction code), code)]) t;
+       end
+    | _ -> tmp
+  in foo [] son;;
+
+(* on parcourt ele, pour chaque element regarde si il est dans cho, si oui, on remplace cet element par
+ * un random, et on ajoute l'element. si ele est vide mais que cho n'a pas la taille max, on remplit cho *)
+let generate_new_chosen_ones ele cho pop_size =
+  let rec remplace_doublons tmp_ele tmp_cho =
+    match tmp_ele with
+    | h :: t -> remplace_doublons t ((List.fold_right (fun e liste -> if e = h then liste @ [(List.nth Code.tous (Random.int (List.length Code.tous)))] else liste @ [e]) tmp_cho []) @ [h])
+    | _ -> tmp_cho
+  in remplace_doublons ele cho;;
+
+let fill_population population pop_size =
+  let rec foo tmp =
+    if (List.length tmp) < pop_size then
+            foo (tmp @ [(List.nth Code.tous (Random.int (List.length Code.tous)))])
+    else
+            tmp
+  in foo population;;
+    
+let genetic_evolution pop_size generation costfunction =
+  let population = (generate_dummy_population pop_size) in
+  
+  let rec generate choosen_ones pop h =
+    if ((List.length choosen_ones) <= pop_size) && (h <= generation) then
+            begin
+                    let sons      = (generate_son_population pop) in
+                    let pop_score = (generate_pop_score sons costfunction) in
+                    let elegible  = (List.fold_right (fun e liste -> if (fst e) = 0 then liste @ [snd e] else liste) pop_score []) in
+
+                    let new_chosen_ones = (generate_new_chosen_ones elegible choosen_ones pop_size) in
+                    let new_population  = (fill_population new_chosen_ones pop_size) in
+                    
+                    generate new_chosen_ones new_population (h + 1);
+            end
+    else
+            begin
+                    choosen_ones;
+            end
+    in generate [] population 1;;
+
+let rec do_not_return_until_not_empty func max_pop max_gen =
+  let liste = (func max_pop max_gen) in 
+  if (List.length liste) = 0 then
+          do_not_return_until_not_empty func (max_pop * 2) (max_gen / 2)
+  else
+          liste;;
+
+
+let rec find_code ele guess =
+  match ele with
+  | h :: t when (List.exists (fun x -> x = h) guess) = false -> h
+  | h :: t -> find_code t guess
+  | _ -> [];;
+
+let rec print_code code =
+  match code with
+  | h :: t ->
+     begin
+             print_string (h ^ " ");
+             print_code t;
+     end    
+  | _ -> print_endline "";;
+
+let () =
+  Random.self_init;
+  let secret = ["Vert";"Vert";"Vert";"Vert"] in
+
+  let do_play = (fun x -> check_play x secret) in
+  let code_depart = ["Rouge"; "Rouge"; "Vert"; "Vert"] in
+  let result = do_play code_depart in
+  let guess = [(code_depart, result)] in
+
+  (* print_int (fitness ["Vert"; "Vert"; "Rouge"; "Rouge"] ["Vert"; "Vert"; "Rouge"; "Rouge"] [(["Vert"; "Vert"; "Rouge"; "Rouge"], (2, 0))]);
+   * print_endline "";; *)
+  
+  let rec genetic result guess code =
+    if (fst result) != 4 then
+            begin
+                    let elegible = (do_not_return_until_not_empty (fun x y -> genetic_evolution x y (fun a -> fitness a guess)) max_pop_size max_generation) in
+                    let code_to_play = find_code elegible (List.fold_right (fun x liste -> liste @ [(fst x)]) guess []) in
+                    print_code code_to_play;
+                    print_endline "";
+                    genetic (do_play code_to_play) (guess @ [(code_to_play, (do_play code_to_play))]) code_to_play;
+            end
+    else
+            print_endline "gagne, ez";
+  in genetic result guess code_depart;;

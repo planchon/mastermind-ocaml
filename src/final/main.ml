@@ -165,22 +165,22 @@ let machine_vs_joueur pseudos () =
 
 
 let joueur_vs_machine pseudos () =
-	let premier = 0 in
-	let pseudos = [List.nth pseudos premier; List.nth pseudos ((premier + 1) mod 2)] in
-	Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
-	Draw.draw_interactive_pion (generate_dummy ());
-	let secret = (Array.to_list (find (Array.of_list (generate_dummy ())) couleurs)) in
+  let premier = 0 in
+  let pseudos = [List.nth pseudos premier; List.nth pseudos ((premier + 1) mod 2)] in
+  Draw.render_text_center_y ((List.nth pseudos 0) ^ " choisis le code") 5;
+  Draw.draw_interactive_pion (generate_dummy ());
+  let secret = (Array.to_list (find (Array.of_list (generate_dummy ())) couleurs)) in
 
-	Draw.draw_board_background ();
-	Draw.draw_interactive_pion (generate_dummy ());
-	Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
+  Draw.draw_board_background ();
+  Draw.draw_interactive_pion (generate_dummy ());
+  Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
   
   let essais_premier = Alg_knuth.choix 0 [] [] in	
   mettre_a_jour_ecran [essais_premier] [(0,0)];
     
-	Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
-	
-	let code = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score())) scores_))) in 
+  Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
+  
+  let code = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score())) scores_))) in 
   (*c'est quoi cette fonction de code ????*)
   let vrai_code = Code.reponse essais_premier secret in
   
@@ -216,8 +216,6 @@ let joueur_vs_machine pseudos () =
 						
 						let score = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score ())) scores_))) in
             let vrai_code = Code.reponse essais secret in
-
-            
 						if (snd score) = nombre_de_pion then (*si le joueur a gagner*)
 							begin
 								Draw.clearScreen Draw.screen;
