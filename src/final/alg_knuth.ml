@@ -104,7 +104,7 @@ end = struct
 
 	(*filtre les codes possibles en fonction du code d'essaie et du score obtenue*)
 	let rec filtre algo codeEssaye codePossible  = 
-		if codePossible != [] && algo = 0 then
+		if codePossible != [] && (algo = 0 || algo = 2) then
 			let rep = reponse (List.hd codePossible) (fst codeEssaye) in
 			if rep = (snd codeEssaye) then
 				(List.hd codePossible) :: filtre algo codeEssaye (List.tl codePossible) 

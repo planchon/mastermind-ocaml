@@ -59,6 +59,7 @@ end = struct
 
         let nombre_pion = int_of_string (Sys.argv.(1));;
         let nombre_couleurs = int_of_string (Sys.argv.(2));;
+
         
         let couleurs = Array.of_list ["Vert"; "Rouge"; "Bleu"; "Orange"; "Noir"; "Blanc"; "Cyan"; "Fonce"; "Rose";"Jaune" ;"Violet" ];;
         

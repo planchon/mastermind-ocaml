@@ -6,6 +6,7 @@ open Alg_knuth;;
 let nombre_de_pion = int_of_string (Sys.argv.(1));;
 let nombre_de_couleurs = int_of_string (Sys.argv.(2));;
 
+
 (* let couleurs = Array.of_list ["Rouge"; "Vert"; "Bleu"; "Orange"; "Noir"; "Blanc"];;*)
 
 let couleurs = Array.of_list ["Vert"; "Rouge"; "Bleu"; "Orange"; "Noir"; "Blanc"; "Cyan"; "Fonce"; "Rose";"Jaune" ;"Violet" ];;
@@ -351,7 +352,7 @@ let () =
 
   match type_de_partie with
   | 0 -> joueur_vs_joueur (list_of_tuple pseudos) ();
-  | 1 -> joueur_vs_machine (list_of_tuple pseudos) (Draw.menu_type_de_partie "Quel algo veux tu ?" ["Knuth"; "Naif"; "..."]) ();
+  | 1 -> joueur_vs_machine (list_of_tuple pseudos) (Draw.menu_type_de_partie "Quel algo veux tu ?" ["Knuth"; "Naif"; "megaFiltre"]) ();
   | 2 -> machine_vs_joueur (list_of_tuple pseudos) ();
   
   Sdltimer.delay 10;;
