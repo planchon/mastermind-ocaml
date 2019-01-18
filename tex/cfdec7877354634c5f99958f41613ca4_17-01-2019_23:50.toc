@@ -1,0 +1,8 @@
+\babel@toc {french}{}
+\contentsline {section}{\numberline {I.}Introduction}{1}{section.1}
+\contentsline {section}{\numberline {II.}Les Intelligences artificielles}{1}{section.2}
+\contentsline {subsection}{\numberline {II.1.}IA de Knuth}{1}{subsection.2.1}
+\contentsline {subsection}{\numberline {II.2.}IA G\IeC {\'e}n\IeC {\'e}tique}{2}{subsection.2.2}
+\contentsline {section}{\numberline {III.}Le module graphique}{4}{section.3}
+\contentsline {section}{\numberline {IV.}Ce que nous a apport\IeC {\'e} le projet}{4}{section.4}
+\contentsline {section}{\numberline {V.}Conclusion}{5}{section.5}
