@@ -102,7 +102,7 @@ end = struct
 	* @param possibles la liste des codes possibles
 	* @return le prochain code a essayer
 	*)
-		let choix algo codeDeja codePossible =
+	let choix algo codeDeja codePossible =
 		if (List.length codePossible) = 1 then (*si 1 element dans la liste *)
 			List.nth codePossible 0
 		else if algo = 3 then

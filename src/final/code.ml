@@ -100,7 +100,7 @@ end = struct
         *  @return tous les codes possibles
         *)
         let tous =
-          let n = List.length couleur_possibles and m = nombre_pion in
+          let n = (List.length couleur_possibles) and m = nombre_pion in
           let rec aux i acc =
             if i = -1 then acc else aux (i - 1) acc @ [(List.map (fun x -> (List.nth couleur_possibles x))(finirTableau m (convert i n 0 [])))];
           in aux (int_of_float ((float_of_int n) ** (float_of_int m)) - 1) [];;

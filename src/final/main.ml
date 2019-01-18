@@ -198,12 +198,30 @@ let machine_vs_joueur pseudos () =
         in jouer 9 [essais_premier] [code] secret ;
     end;;
 
+    let rec affiche_code codes =
+      if codes != [] then
+        (print_string (Code.string_of_code (List.hd codes));
+        print_string "  \n";  
+        affiche_code (List.tl codes);)
+      else
+        print_string "fini";;
+
+
 
 (** joue partie ou le joueur choisie le code et la machine le devine 
 * @param pseudos des joeurs
 * @param algo choisie par le joueur
 * @return unit 
 *)
+
+let rec test_dedans secret listeCode =
+  if listeCode != [] then
+    if (List.hd listeCode) = secret then
+      print_string "ok"
+    else
+      test_dedans secret (List.tl listeCode)
+  else
+    print_string "nope..";;
 
 let _joueur_vs_machine pseudos algo () =
   Draw.draw_board_background ();
@@ -217,7 +235,11 @@ let _joueur_vs_machine pseudos algo () =
   Draw.draw_interactive_pion (generate_dummy ());
   Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
   
-  let essais_premier = Alg_knuth.choix 3 [] (Code.tous) in
+  print_string "  \n";
+  affiche_code Code.tous;
+  test_dedans secret (Code.tous);
+
+  let essais_premier = Alg_knuth.choix 1 [] (Code.tous) in
   mettre_a_jour_ecran [essais_premier] [(0,0)];
 
   
@@ -234,31 +256,31 @@ let _joueur_vs_machine pseudos algo () =
 		  wait_quit_event ();
 	  end
   else if snd code != fst vrai_code || fst code != snd vrai_code then (*si le joueur a gagner*)
-          begin
-                  Draw.clearScreen Draw.screen;
-                  Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
-                  Draw.render_text_center_y ((List.nth pseudos 0) ^ " rentre le bon score...") 600;
-                  wait_quit_event ();
-          end
+    begin
+      Draw.clearScreen Draw.screen;
+      Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
+      Draw.render_text_center_y ((List.nth pseudos 0) ^ " rentre le bon score...") 600;
+      wait_quit_event ();
+    end
   else
 	  begin
 		  let rec jouer vie pions scores codePossible secret algo =
 		    if vie != 0 then (*si le joueur a encore des essaies*)
-			    begin
+          begin
+            print_string "  \n";
+            test_dedans secret codePossible;
 				    mettre_a_jour_ecran pions scores;
 				    Draw.draw_interactive_pion (List.hd (List.rev pions));
 				    Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
             
-            print_int (List.length codePossible);
             print_string "  ";
+            print_int (List.length codePossible);
 
 				    let essais = Alg_knuth.choix algo [] codePossible in
 				    let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in
 
             mettre_a_jour_ecran tmpPions tmpCode;
             
-            print_string (Code.string_of_code essais);
-
             Draw.draw_interactive_pion (generate_dummy_score ());                    
 				    Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
 				    
