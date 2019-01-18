@@ -123,8 +123,8 @@ end = struct
 			[];;
 
 	(** Filtre les codes possibles
-	* @param methode 0 pour l ' algorithme naif,
-	*                1 pour l ' algorithme de KNUTH
+	* @param methode 1 pour l ' algorithme naif,
+	*                0 pour l ' algorithme de KNUTH
 	*               ... et ainsi de suite
 	* @param (code, rep) le code essaye et la reponse correspondante
 	* @param la liste de courante de codes possibles
@@ -133,14 +133,15 @@ end = struct
 	let rec filtre algo codeEssaye codePossible  = 
 		if codePossible != [] && (algo = 0 || algo = 2) then
 			let rep = reponse (List.hd codePossible) (fst codeEssaye) in
-			if rep = (snd codeEssaye) then
-				(List.hd codePossible) :: filtre algo codeEssaye (List.tl codePossible) 
-			else
-				filtre algo codeEssaye (List.tl codePossible) 
+				(if rep = (snd codeEssaye) then
+					(List.hd codePossible) :: filtre algo codeEssaye (List.tl codePossible) 
+				else
+					filtre algo codeEssaye (List.tl codePossible) )
 		else if algo = 1 then
 			filtre_algo_naif (fst codeEssaye) codePossible
 		else 
 			[];;
+			
 	let rec testAlgo numero listeCode codeSecret temp =
 		let codeTest = choix numero [] listeCode in
 		let listeCode = filtre 1 (codeTest,reponse codeTest codeSecret) listeCode in
