@@ -217,8 +217,9 @@ let _joueur_vs_machine pseudos algo () =
   Draw.draw_interactive_pion (generate_dummy ());
   Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
   
-  let essais_premier = Alg_knuth.choix 1 [] (Code.tous) in
+  let essais_premier = Alg_knuth.choix 3 [] (Code.tous) in
   mettre_a_jour_ecran [essais_premier] [(0,0)];
+
   
   Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
   
@@ -254,13 +255,15 @@ let _joueur_vs_machine pseudos algo () =
 				    let essais = Alg_knuth.choix algo [] codePossible in
 				    let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in
 
-				    mettre_a_jour_ecran tmpPions tmpCode;
-                                    Draw.draw_interactive_pion (generate_dummy_score ());                    
+            mettre_a_jour_ecran tmpPions tmpCode;
+            
+            print_string (Code.string_of_code essais);
+
+            Draw.draw_interactive_pion (generate_dummy_score ());                    
 				    Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
 				    
 				    let score = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score ())) scores_))) in
-                                    let vrai_code = Code.reponse essais secret in
-
+            let vrai_code = Code.reponse essais secret in
                                     
 				    if (snd score) = nombre_de_pion then (*si le joueur a gagner*)
 					    begin
@@ -268,16 +271,16 @@ let _joueur_vs_machine pseudos algo () =
 						    Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
 						    Draw.render_text_center_y "escape pour sortir" 600;
 						    wait_quit_event ();
-                                            end
-                                    else if snd score != fst vrai_code || fst score != snd vrai_code then (*si le joueur a gagner*)
-                                            begin
-                                                    Draw.clearScreen Draw.screen;
-                                                    Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
-                                                    Draw.render_text_center_y ((List.nth pseudos 0) ^ " rentre le bon score...") 600;
-                                                    wait_quit_event ();
-                                            end
+            end
+            else if snd score != fst vrai_code || fst score != snd vrai_code then (*si le joueur a gagner*)
+              begin
+                Draw.clearScreen Draw.screen;
+                Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
+                Draw.render_text_center_y ((List.nth pseudos 0) ^ " rentre le bon score...") 600;
+                wait_quit_event ();
+              end
 				    else (*sinon relance un tour*)
-					    let codePossible = Alg_knuth.filtre algo (essais,(snd score,fst score)) codePossible in
+					    let codePossible = Alg_knuth.filtre algo (essais,(vrai_code)) codePossible in
 					    jouer (vie - 1) tmpPions ((List.rev (List.tl (List.rev tmpCode))) @ [score]) codePossible secret algo
 			    end
 		    else (*si le jouer a utiliser tt ces essaies*)
@@ -287,7 +290,7 @@ let _joueur_vs_machine pseudos algo () =
 				    Draw.render_text_center_y "escape pour sortir" 600;
 				    wait_quit_event ();
 			    end
-		  in jouer 9 [essais_premier] [code] (Alg_knuth.filtre algo (essais_premier,(snd code,fst code)) Code.tous) secret algo;
+		  in jouer 9 [essais_premier] [code] (Alg_knuth.filtre algo (essais_premier,vrai_code) Code.tous) secret algo;
 	  end;;
 
 let fonction_score pions score pseudo =
@@ -430,7 +433,7 @@ let joueur_vs_joueur pseudos () =
 						Draw.render_text_center_y "escape pour sortir" 600;
 						wait_quit_event ();
 					end
-					in jouer 9 [essais_premier] [code]; (*JSP a quoi ca sert...*)
+					in jouer 9 [essais_premier] [code]; 
     end;;
     
 let rec ajustement_couleurs param temp =

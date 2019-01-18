@@ -106,7 +106,7 @@ end = struct
 		if (List.length codePossible) = 1 then (*si 1 element dans la liste *)
 			List.nth codePossible 0
 		else if algo = 3 then
-			["Vert";"Vert";"Vert";"Vert"]
+			["Bleu";"Bleu";"Vert";"Vert"]
 		else if algo = 0 then (*minMax pour Knuth*)
 			minMax (0,0) codePossible
 		else if algo = 1 then (*Naif*)
@@ -133,13 +133,11 @@ end = struct
 	let rec filtre algo codeEssaye codePossible  = 
 		if codePossible != [] && (algo = 0 || algo = 2) then
 			let rep = reponse (List.hd codePossible) (fst codeEssaye) in
-				(if rep = (snd codeEssaye) then
+				if rep = (snd codeEssaye) then
 					(List.hd codePossible) :: filtre algo codeEssaye (List.tl codePossible) 
 				else
-					filtre algo codeEssaye (List.tl codePossible) )
-		else if algo = 1 then
-			filtre_algo_naif (fst codeEssaye) codePossible
-		else 
+					filtre algo codeEssaye (List.tl codePossible)
+		else
 			[];;
 			
 	let rec testAlgo numero listeCode codeSecret temp =
