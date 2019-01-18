@@ -323,7 +323,6 @@ let fonction_score pions score pseudo =
 * @param algo choisie par le joueur
 * @return unit 
 *)
-
 let joueur_vs_machine pseudos algo () =
   if ((algo = 0) || (algo = 2)) then
           _joueur_vs_machine pseudos algo ()
@@ -337,47 +336,69 @@ let joueur_vs_machine pseudos algo () =
                   Draw.draw_interactive_pion (generate_dummy ());
                   let secret = (Array.to_list (find (Array.of_list (generate_dummy ())) couleurs)) in
 
-                  let code_depart = ["Rouge"; "Rouge"; "Vert"; "Vert"] in
+                  let code_depart = (List.nth Code.tous (Random.int (List.length Code.tous))) in
 
                   let result = fonction_score [code_depart] [(0,0)] (List.nth pseudos 0) in
 
-                  if (fst result) != nombre_de_pion then
-                          begin
-                                  (* pas encore fait le truc du res faux *)
-                                  let rec jouer vie pions score last_code =
-                                    if vie != 0 then
-                                            begin
-                                                    mettre_a_jour_ecran pions score;
-                                                    let move_ia = Alg_genetic.make_gen_move (List.combine pions score) last_code in
-                                                    let res = fonction_score (pions @ [move_ia]) (score @ [(0,0)]) (List.nth pseudos 0) in
-
-                                                    if (fst res) = nombre_de_pion then
-                                                            begin
-								    Draw.clearScreen Draw.screen;
-								    Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
-								    Draw.render_text_center_y "escape pour sortir" 600;
-								    wait_quit_event ();                                                                    
-                                                            end
-                                                    else
-                                                            begin
-                                                                    jouer (vie - 1) (pions @ [move_ia]) (score @ [res]) move_ia
-                                                            end
-                                            end
-                                    else
-                                            begin
-                                                    Draw.clearScreen Draw.screen;
-						    Draw.render_text_center ((List.nth pseudos 0) ^ " tu as gagne!");
-						    Draw.render_text_center_y "escape pour sortir" 600;
-						    wait_quit_event ();                                                                    
-                                            end
-                                  in jouer 9 [code_depart] [result] code_depart;
-                          end
-                  else
+                  let attendu = (Code.reponse code_depart secret) in
+                  if  (fst result) != (fst attendu) || (snd result) != (snd attendu) then
                           begin
                                   Draw.clearScreen Draw.screen;
 				  Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
-				  Draw.render_text_center_y "escape pour sortir" 600;
-				  wait_quit_event ();
+				  Draw.render_text_center_y "mets le bon code...1" 600;
+				  wait_quit_event ();                                                                    
+                          end
+                  else
+                          begin                                  
+                                  if (fst result) != nombre_de_pion then
+                                          begin
+                                                  (* pas encore fait le truc du res faux *)
+                                                  let rec jouer vie pions score last_code =
+                                                    if vie != 0 then
+                                                            begin
+                                                                    mettre_a_jour_ecran pions score;
+                                                                    let move_ia = Alg_genetic.make_gen_move (List.combine pions score) last_code in
+                                                                    let res = fonction_score (pions @ [move_ia]) (score @ [(0,0)]) (List.nth pseudos 0) in
+
+                                                                    let attendu = (Code.reponse move_ia secret) in
+                                                                    if  (fst res) != (fst attendu) || (snd res) != (snd attendu) then
+                                                                            begin
+		                                                                    Draw.clearScreen Draw.screen;
+								                    Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
+								                    Draw.render_text_center_y "mets le bon code...2" 600;
+								                    wait_quit_event ();                                                                    
+                                                                            end
+                                                                    else
+                                                                            begin
+                                                                                    if (fst res) = nombre_de_pion then
+                                                                                            begin
+								                                    Draw.clearScreen Draw.screen;
+								                                    Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
+								                                    Draw.render_text_center_y "escape pour sortir" 600;
+								                                    wait_quit_event ();                                                                    
+                                                                                            end
+                                                                                    else
+                                                                                            begin
+                                                                                                    jouer (vie - 1) (pions @ [move_ia]) (score @ [res]) move_ia
+                                                                                            end
+                                                                            end
+                                                            end
+                                                    else
+                                                            begin
+                                                                    Draw.clearScreen Draw.screen;
+						                    Draw.render_text_center ((List.nth pseudos 0) ^ " tu as gagne!");
+						                    Draw.render_text_center_y "escape pour sortir" 600;
+						                    wait_quit_event ();                                                                    
+                                                            end
+                                                  in jouer 9 [code_depart] [result] code_depart;
+                                          end
+                                  else
+                                          begin
+                                                  Draw.clearScreen Draw.screen;
+				                  Draw.render_text_center ((List.nth pseudos 1) ^ " tu as gagne!");
+				                  Draw.render_text_center_y "escape pour sortir" 600;
+				                  wait_quit_event ();
+                                          end
                           end
           end;;
   
@@ -404,7 +425,6 @@ let joueur_vs_joueur pseudos () =
   Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
   
 	let code = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score())) scores_))) in 
-	(*c'est quoi cette fonction de code ????*)
   
   if (snd code) = nombre_de_pion then (*sort si limite de pion atteints mais je sais pas trop...*)
     begin

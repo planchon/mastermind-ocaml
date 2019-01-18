@@ -1,3 +1,0 @@
-type board_background_images = {
-                cote_gauche : Sdlvideo.surface;
-}
