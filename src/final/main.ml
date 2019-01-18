@@ -129,6 +129,11 @@ let rec code_random temp =
   else
     [];;
 
+(** joue partie ou la machine choisie le code et le joueur la devine 
+* @param pseudos des joeurs
+* @return unit 
+*)
+
 let machine_vs_joueur pseudos () =
 	Draw.draw_board_background ();
   let premier = 1 in
@@ -194,6 +199,12 @@ let machine_vs_joueur pseudos () =
     end;;
 
 
+(** joue partie ou le joueur choisie le code et la machine le devine 
+* @param pseudos des joeurs
+* @param algo choisie par le joueur
+* @return unit 
+*)
+
 let _joueur_vs_machine pseudos algo () =
   Draw.draw_board_background ();
   let premier = 0 in
@@ -212,7 +223,6 @@ let _joueur_vs_machine pseudos algo () =
   Draw.render_text_center_y ((List.nth pseudos 0) ^ " mets le score") 5;
   
   let code = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score())) scores_))) in 
-  (*c'est quoi cette fonction de code ????*)
   let vrai_code = Code.reponse essais_premier secret in
   
   if (fst vrai_code) = nombre_de_pion then 
@@ -287,6 +297,12 @@ let fonction_score pions score pseudo =
   let tmp = (convert_liste_to_score (Array.to_list (find (Array.of_list (generate_dummy_score ())) scores_))) in
   (snd tmp, fst tmp);;
   
+(** joue partie ou le joueur choisie le code et la machine le devine 
+* @param pseudos des joeurs
+* @param algo choisie par le joueur
+* @return unit 
+*)
+
 let joueur_vs_machine pseudos algo () =
   if ((algo = 0) || (algo = 2)) then
           _joueur_vs_machine pseudos algo ()
@@ -344,6 +360,10 @@ let joueur_vs_machine pseudos algo () =
                           end
           end;;
   
+(** joue partie ou un joueur choisie le code et l'autre le devine 
+* @param pseudos des joeurs
+* @return unit 
+*)
 
 let joueur_vs_joueur pseudos () =
   Draw.draw_board_background ();
@@ -415,6 +435,10 @@ let rec ajustement_couleurs param temp =
     (Array.get couleurs temp) :: ajustement_couleurs (param - 1) (temp + 1)
   else 
     [];;
+
+(** fonction main pour joueur une partie 
+* @return unit 
+*)
 
 let () =
   Random.self_init ();
