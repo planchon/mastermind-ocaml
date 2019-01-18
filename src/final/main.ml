@@ -235,9 +235,6 @@ let _joueur_vs_machine pseudos algo () =
   Draw.draw_interactive_pion (generate_dummy ());
   Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
   
-  print_string "  \n";
-  affiche_code Code.tous;
-  test_dedans secret (Code.tous);
 
   let essais_premier = Alg_knuth.choix 1 [] (Code.tous) in
   mettre_a_jour_ecran [essais_premier] [(0,0)];
@@ -267,14 +264,10 @@ let _joueur_vs_machine pseudos algo () =
 		  let rec jouer vie pions scores codePossible secret algo =
 		    if vie != 0 then (*si le joueur a encore des essaies*)
           begin
-            print_string "  \n";
-            test_dedans secret codePossible;
 				    mettre_a_jour_ecran pions scores;
 				    Draw.draw_interactive_pion (List.hd (List.rev pions));
 				    Draw.render_text_center_y ((List.nth pseudos 1) ^ " a toi de jouer") 5;
             
-            print_string "  ";
-            print_int (List.length codePossible);
 
 				    let essais = Alg_knuth.choix algo [] codePossible in
 				    let tmpPions = pions @ [essais] and tmpCode = scores @ [(0,0)] in

@@ -95,16 +95,47 @@ end = struct
             if i >= final then tab
             else aux final (i + 1) (tab @ [0])
           in aux b taille tab;;
+
+        let rec incremente_compteur conteur max =
+          if conteur != [] then
+            (if (List.hd conteur) = max then
+              0 :: incremente_compteur (List.tl conteur) max
+            else
+              ((List.hd conteur) + 1) :: (List.tl conteur))
+          else
+            [];;
+        
+        
+        let rec conteur_to_couleur conteur =
+          if conteur != [] then
+            List.nth couleur_possibles (List.hd conteur) :: conteur_to_couleur (List.tl conteur)
+          else
+            [];;
+        
+        
+        
+        let rec mise_en_place conteur max taille temp =
+          if temp != int_of_float ((float_of_int (max+1)) ** (float_of_int taille))    then
+            conteur_to_couleur conteur :: mise_en_place (incremente_compteur conteur max) max taille (temp + 1)
+          else
+            [];;
           
+        let rec init_compteur temp =
+          if temp != 0 then
+            0 :: init_compteur (temp-1)
+          else
+            [];;
+        
+
         (** genere tous les codes possibles
         *  @return tous les codes possibles
-        *)
-        let tous =
-          let n = (List.length couleur_possibles) and m = nombre_pion in
-          let rec aux i acc =
-            if i = -1 then acc else aux (i - 1) acc @ [(List.map (fun x -> (List.nth couleur_possibles x))(finirTableau m (convert i n 0 [])))];
-          in aux (int_of_float ((float_of_int n) ** (float_of_int m)) - 1) [];;
-        
+        *)    
+        let tous  =
+          let max = nombre_couleurs - 1 in
+          let taille = nombre_pion in
+          let conteur = init_compteur taille in
+          mise_en_place conteur max taille 0;;
+
         (** Genere toutes les reponses possibles
         *  @return toutes les reponses possibles
         *)
